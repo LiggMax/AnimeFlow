@@ -20,28 +20,24 @@ class _MainPageState extends State<MainPage> {
       title: "首页",
       icon: Icons.home,
       activeIcon: Icons.home_filled,
-      page: const Text("首页"),
     ),
     TabItem(
       type: TabType.category,
       title: "分类",
       icon: Icons.category_outlined,
       activeIcon: Icons.category,
-      page: const Text("分类"),
     ),
     TabItem(
       type: TabType.cart,
       title: "购物车",
       icon: Icons.miscellaneous_services_outlined,
       activeIcon: Icons.settings,
-      page: const Text("购物车"),
     ),
     TabItem(
       type: TabType.profile,
       title: "我的",
       icon: Icons.person_outline,
       activeIcon: Icons.person,
-      page: const Text("我的"),
     ),
   ];
 
