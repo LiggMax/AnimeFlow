@@ -84,11 +84,21 @@ class _HomeViewState extends State<HomeView> {
   }
 
   void getBannerList() async {
-    final bannerList = await getHotApi(6, 0);
-    if (mounted) {
-      setState(() {
-        _bannerList = bannerList;
-      });
+    try {
+      final bannerList = await getHotApi(6, 0);
+      if (mounted) {
+        setState(() {
+          _bannerList = bannerList;
+        });
+      }
+    } catch (e) {
+      print('获取Banner列表失败: $e');
+      // 即使出错也要更新状态，避免无限loading
+      if (mounted) {
+        setState(() {
+          _bannerList = null;
+        });
+      }
     }
   }
 

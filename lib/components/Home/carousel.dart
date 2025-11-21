@@ -20,7 +20,7 @@ class _MySliderState extends State<MySlider> {
   //轮播图
   Widget _getCarousel() {
     // 检查数据是否为空或长度为0
-    if (widget.bannerList.data == null || widget.bannerList.data!.isEmpty) {
+    if (widget.bannerList.data.isEmpty) {
       return SizedBox(
         height: 200,
         child: Center(child: Text('暂无数据')),
@@ -30,9 +30,9 @@ class _MySliderState extends State<MySlider> {
     final double screenWidth = MediaQuery.of(context).size.width;
     return CarouselSlider(
       carouselController: _controller,
-      items: List.generate(widget.bannerList.data!.length, (int index) {
+      items: List.generate(widget.bannerList.data.length, (int index) {
         return Image.network(
-          widget.bannerList.data![index].subject?.images?.large ?? '',
+          widget.bannerList.data[index].subject.images.large,
           fit: BoxFit.cover,
           width: screenWidth,
           errorBuilder: (context, error, stackTrace) {
@@ -87,7 +87,7 @@ class _MySliderState extends State<MySlider> {
   //轮播图指示器
   Widget _dots() {
     // 检查数据是否为空或长度为0
-    if (widget.bannerList.data == null || widget.bannerList.data!.isEmpty) {
+    if (widget.bannerList.data.isEmpty) {
       return SizedBox.shrink();
     }
 
@@ -97,7 +97,7 @@ class _MySliderState extends State<MySlider> {
       bottom: 5,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
-        children: List.generate(widget.bannerList.data!.length, (int index) {
+        children: List.generate(widget.bannerList.data.length, (int index) {
           return GestureDetector(
             onTap: () {
               _controller.animateToPage(index);
