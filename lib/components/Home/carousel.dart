@@ -17,7 +17,7 @@ class _MySliderState extends State<MySlider> {
       CarouselSliderController(); //轮播图控制器
 
   //轮播图
-  Widget _getSlider() {
+  Widget _getCarousel() {
     final double screenWidth = MediaQuery.of(context).size.width;
     return CarouselSlider(
       carouselController: _controller,
@@ -148,7 +148,7 @@ class _MySliderState extends State<MySlider> {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        _getSlider(),
+        _getCarousel(),
         _topBackground(),
         _background(),
         _search(),

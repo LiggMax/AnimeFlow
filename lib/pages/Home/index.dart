@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:my_anime/components/Home/category.dart';
 import 'package:my_anime/components/Home/hot.dart';
 import 'package:my_anime/components/Home/more_list.dart';
-import 'package:my_anime/components/Home/slider.dart';
+import 'package:my_anime/components/Home/carousel.dart';
 import 'package:my_anime/components/Home/suggestion.dart';
 import 'package:my_anime/models/banner_item.dart';
 
