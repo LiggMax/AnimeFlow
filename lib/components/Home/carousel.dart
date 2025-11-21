@@ -21,7 +21,7 @@ class _MySliderState extends State<MySlider> {
   Widget _getCarousel() {
     // 检查数据是否为空或长度为0
     if (widget.bannerList.data == null || widget.bannerList.data!.isEmpty) {
-      return Container(
+      return SizedBox(
         height: 200,
         child: Center(child: Text('暂无数据')),
       );
@@ -35,18 +35,6 @@ class _MySliderState extends State<MySlider> {
           widget.bannerList.data![index].subject?.images?.large ?? '',
           fit: BoxFit.cover,
           width: screenWidth,
-          loadingBuilder: (BuildContext context, Widget child,
-              ImageChunkEvent? loadingProgress) {
-            if (loadingProgress == null) return child;
-            return Center(
-              child: CircularProgressIndicator(
-                value: loadingProgress.expectedTotalBytes != null
-                    ? loadingProgress.cumulativeBytesLoaded /
-                        loadingProgress.expectedTotalBytes!
-                    : null,
-              ),
-            );
-          },
           errorBuilder: (context, error, stackTrace) {
             return Container(
               color: Colors.grey[300],
@@ -116,7 +104,7 @@ class _MySliderState extends State<MySlider> {
             },
             child: AnimatedContainer(
               duration: Duration(milliseconds: 200),
-              height: 5,
+              height: 10,
               width: index == _current ? 30 : 20,
               margin: EdgeInsets.symmetric(horizontal: 2),
               decoration: BoxDecoration(
