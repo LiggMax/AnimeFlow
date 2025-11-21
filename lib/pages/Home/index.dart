@@ -14,20 +14,12 @@ class HomeView extends StatefulWidget {
 }
 
 class _HomeViewState extends State<HomeView> {
-
   final List<BannerItem> _bannerList = [
-    BannerItem(
-      id: '1',
-      url: 'https://play.xfvod.pro:8088/images/hb/jdgjj.webp',
-    ),
-    BannerItem(
-      id: '2',
-      url: 'https://play.xfvod.pro/images/hb/wmbkn.png',
-    ),
-    BannerItem(
-      id: '3',
-      url: 'https://play.xfvod.pro/images/hb/gyro.png',
-    ),
+    BannerItem(id: '1', url: 'https://play.xfvod.pro:8088/images/hb/jdgjj.webp'),
+    BannerItem(id: '2', url: 'https://play.xfvod.pro/images/hb/wmbkn.png'),
+    BannerItem(id: '3', url: 'https://play.xfvod.pro/images/hb/gyro.png'),
+    BannerItem(id: '4', url: 'https://play.xfvod.pro/images/hb/blzh.webp'),
+    BannerItem(id: '4', url: 'https://play.xfvod.pro/images/hb/qczt.jpg'),
   ];
 
   List<Widget> _getScrollChildren() {
@@ -75,7 +67,7 @@ class _HomeViewState extends State<HomeView> {
             crossAxisSpacing: 10,
           ),
           itemBuilder: (BuildContext context, int index) {
-            return MoreList(index:  index,);
+            return MoreList(index: index);
           },
         ),
       ),
