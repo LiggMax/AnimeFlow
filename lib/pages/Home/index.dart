@@ -84,7 +84,7 @@ class _HomeViewState extends State<HomeView> {
   }
 
   void getBannerList() async {
-    final bannerList = await getHotApi(10, 0);
+    final bannerList = await getHotApi(6, 0);
     if (mounted) {
       setState(() {
         _bannerList = bannerList;
