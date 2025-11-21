@@ -37,6 +37,11 @@ dependencies:
   carousel_slider: ^5.1.1
   dio: ^5.9.0
 
+  #视频组件
+  media_kit: ^1.2.2
+  media_kit_video: ^2.0.0
+  media_kit_libs_video: ^1.0.7
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

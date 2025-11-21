@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:my_anime/pages/Cart/index.dart';
 import 'package:my_anime/pages/Category/index.dart';
 import 'package:my_anime/pages/Home/index.dart';
-import 'package:my_anime/pages/Profile/index.dart';
+import 'package:my_anime/pages/Video/index.dart';
 
 import '../../models/tab_item.dart';
 
@@ -35,7 +35,7 @@ class _MainPageState extends State<MainPage> {
     ),
     TabItem(
       type: TabType.profile,
-      title: "我的",
+      title: "视频",
       icon: Icons.person_outline,
       activeIcon: Icons.person,
     ),
@@ -53,15 +53,26 @@ class _MainPageState extends State<MainPage> {
 
   int _currentIndex = 0;
 
-  List<Widget> _getTChildren() {
-    return [HomeView(), CategoryView(), CartView(), ProfileView()];
+  Widget _getCurrentPage() {
+    switch (_currentIndex) {
+      case 0:
+        return const HomeView();
+      case 1:
+        return const CategoryView();
+      case 2:
+        return const CartView();
+      case 3:
+        return const VideoView();
+      default:
+        return const HomeView();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: IndexedStack(index: _currentIndex, children: _getTChildren()),
+        child: _getCurrentPage(),
       ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _currentIndex,
