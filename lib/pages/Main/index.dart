@@ -60,12 +60,10 @@ class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("主页")),
       body: SafeArea(
         child: IndexedStack(index: _currentIndex, children: _getTChildren()),
       ),
       bottomNavigationBar: NavigationBar(
-        indicatorColor: Theme.of(context).colorScheme.primary,
         selectedIndex: _currentIndex,
         onDestinationSelected: (index) {
           setState(() {
