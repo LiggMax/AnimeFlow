@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 class MoreList extends StatefulWidget {
-  const MoreList({super.key});
+  final int index;
+
+  const MoreList({super.key, required this.index});
 
   @override
   State<MoreList> createState() => _MoreListState();
@@ -16,7 +18,10 @@ class _MoreListState extends State<MoreList> {
         color: Colors.blue,
         borderRadius: BorderRadius.all(Radius.circular(10)),
       ),
-      child: const Text("商品",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 30),),
+      child: Text(
+        "商品${widget.index + 1}",
+        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 30),
+      ),
     );
   }
 }
