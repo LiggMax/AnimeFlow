@@ -15,7 +15,8 @@ class MySlider extends StatefulWidget {
 class _MySliderState extends State<MySlider> {
   int _current = 0; //当前轮播图索引
   final CarouselSliderController _controller =
-      CarouselSliderController(); //轮播图控制器
+  CarouselSliderController(); //轮播图控制器
+
 
   //轮播图
   Widget _getCarousel() {
@@ -27,12 +28,16 @@ class _MySliderState extends State<MySlider> {
       );
     }
 
-    final double screenWidth = MediaQuery.of(context).size.width;
+    final double screenWidth = MediaQuery
+        .of(context)
+        .size
+        .width;
     return CarouselSlider(
       carouselController: _controller,
       items: List.generate(widget.bannerList.data.length, (int index) {
+        final carousel = widget.bannerList.data[index];
         return Image.network(
-          widget.bannerList.data[index].subject.images.large,
+          carousel.subject.images.large,
           fit: BoxFit.cover,
           width: screenWidth,
           errorBuilder: (context, error, stackTrace) {
