@@ -4,7 +4,9 @@ import 'package:my_anime/components/Home/hot.dart';
 import 'package:my_anime/components/Home/more_list.dart';
 import 'package:my_anime/components/Home/carousel.dart';
 import 'package:my_anime/components/Home/suggestion.dart';
-import 'package:my_anime/models/banner_item.dart';
+import 'package:my_anime/models/hot_item.dart';
+
+import '../../api/hot.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -14,18 +16,19 @@ class HomeView extends StatefulWidget {
 }
 
 class _HomeViewState extends State<HomeView> {
-  final List<BannerItem> _bannerList = [
-    BannerItem(id: '1', url: 'https://play.xfvod.pro:8088/images/hb/jdgjj.webp'),
-    BannerItem(id: '2', url: 'https://play.xfvod.pro/images/hb/wmbkn.png'),
-    BannerItem(id: '3', url: 'https://play.xfvod.pro/images/hb/gyro.png'),
-    BannerItem(id: '4', url: 'https://play.xfvod.pro/images/hb/blzh.webp'),
-    BannerItem(id: '4', url: 'https://play.xfvod.pro/images/hb/qczt.jpg'),
-  ];
+  HotItem? _bannerList;
 
   List<Widget> _getScrollChildren() {
     return [
       // 轮播
-      SliverToBoxAdapter(child: MySlider(bannerList: _bannerList)),
+      SliverToBoxAdapter(
+        child: _bannerList == null
+            ? SizedBox(
+                height: 200,
+                child: Center(child: CircularProgressIndicator()),
+              )
+            : MySlider(bannerList: _bannerList!),
+      ),
       SliverToBoxAdapter(child: SizedBox(height: 10)),
 
       // 分类
@@ -72,6 +75,21 @@ class _HomeViewState extends State<HomeView> {
         ),
       ),
     ];
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getBannerList(); // 在初始化时调用获取banner列表的方法
+  }
+
+  void getBannerList() async {
+    final bannerList = await getHotApi(10, 0);
+    if (mounted) {
+      setState(() {
+        _bannerList = bannerList;
+      });
+    }
   }
 
   @override

@@ -1,15 +1,15 @@
 /// data : [{"subject":{"id":526448,"name":"グノーシア","nameCN":"古诺希亚","type":2,"info":"21话 / 2025年10月11日 / 市川量也 / プチデポット / 松浦有紗","rating":{"rank":1229,"count":[8,5,2,10,36,74,411,484,56,26],"score":7.38,"total":1112},"locked":false,"nsfw":false,"images":{"large":"https://lain.bgm.tv/pic/cover/l/17/82/526448_ssr71.jpg","common":"https://lain.bgm.tv/pic/cover/c/17/82/526448_ssr71.jpg","medium":"https://lain.bgm.tv/pic/cover/m/17/82/526448_ssr71.jpg","small":"https://lain.bgm.tv/pic/cover/s/17/82/526448_ssr71.jpg","grid":"https://lain.bgm.tv/pic/cover/g/17/82/526448_ssr71.jpg"}},"count":1900},{"subject":{"id":582501,"name":"藤本タツキ17-26","nameCN":"藤本树17-26","type":2,"info":"8话 / 2025年11月8日 / 長屋誠志郎、木村延景、武内宣之、安藤尚也、渡邉徹明、寺澤和晃、本間修 / 藤本タツキ「藤本タツキ短編集17-21」「藤本タツキ短編集22-26」 (集英社ジャンプコミック刊) / Moaang、小園菜穂、もりともこ、MYOUN、島崎望、徳岡紘平、東島久志、佐川遥","rating":{"rank":1066,"count":[0,1,1,9,24,109,496,581,59,24],"score":7.44,"total":1304},"locked":false,"nsfw":false,"images":{"large":"https://lain.bgm.tv/pic/cover/l/fb/2b/582501_A5ytA.jpg","common":"https://lain.bgm.tv/pic/cover/c/fb/2b/582501_A5ytA.jpg","medium":"https://lain.bgm.tv/pic/cover/m/fb/2b/582501_A5ytA.jpg","small":"https://lain.bgm.tv/pic/cover/s/fb/2b/582501_A5ytA.jpg","grid":"https://lain.bgm.tv/pic/cover/g/fb/2b/582501_A5ytA.jpg"}},"count":1870},{"subject":{"id":498378,"name":"SPY×FAMILY Season 3","nameCN":"间谍过家家 第三季","type":2,"info":"13话 / 2025年10月4日 / 今井友紀子 / 遠藤達哉（集英社「少年ジャンプ＋」連載） / 嶋田和晃","rating":{"rank":1200,"count":[2,1,1,4,24,108,567,402,46,50],"score":7.38,"total":1205},"locked":false,"nsfw":false,"images":{"large":"https://lain.bgm.tv/pic/cover/l/3d/79/498378_3ycrL.jpg","common":"https://lain.bgm.tv/pic/cover/c/3d/79/498378_3ycrL.jpg","medium":"https://lain.bgm.tv/pic/cover/m/3d/79/498378_3ycrL.jpg","small":"https://lain.bgm.tv/pic/cover/s/3d/79/498378_3ycrL.jpg","grid":"https://lain.bgm.tv/pic/cover/g/3d/79/498378_3ycrL.jpg"}},"count":1695},{"subject":{"id":542203,"name":"東島丹三郎は仮面ライダーになりたい","nameCN":"东岛丹三郎想成为假面骑士","type":2,"info":"2025年10月4日 / 池添隆博 / 柴田ヨクサル（ヒーローズコミックス刊） / Cindy H. Yamauchi（山内英子）","rating":{"rank":1468,"count":[4,0,3,12,25,122,457,413,46,22],"score":7.3,"total":1104},"locked":false,"nsfw":false,"images":{"large":"https://lain.bgm.tv/pic/cover/l/58/51/542203_YYfsF.jpg","common":"https://lain.bgm.tv/pic/cover/c/58/51/542203_YYfsF.jpg","medium":"https://lain.bgm.tv/pic/cover/m/58/51/542203_YYfsF.jpg","small":"https://lain.bgm.tv/pic/cover/s/58/51/542203_YYfsF.jpg","grid":"https://lain.bgm.tv/pic/cover/g/58/51/542203_YYfsF.jpg"}},"count":1335},{"subject":{"id":285757,"name":"ワンパンマン 第3期","nameCN":"一拳超人 第三季","type":2,"info":"2025年10月12日 / 永居慎平 / ONE・村田雄介（集英社「となりのヤングジャンプ」連載） / 久保田誓、黒田新次郎、白川亮介","rating":{"rank":9217,"count":[42,29,69,150,181,202,112,43,5,12],"score":5.11,"total":845},"locked":false,"nsfw":false,"images":{"large":"https://lain.bgm.tv/pic/cover/l/5a/63/285757_VvaRn.jpg","common":"https://lain.bgm.tv/pic/cover/c/5a/63/285757_VvaRn.jpg","medium":"https://lain.bgm.tv/pic/cover/m/5a/63/285757_VvaRn.jpg","small":"https://lain.bgm.tv/pic/cover/s/5a/63/285757_VvaRn.jpg","grid":"https://lain.bgm.tv/pic/cover/g/5a/63/285757_VvaRn.jpg"}},"count":1039}]
 /// total : 1000
 
-class Hot {
-  Hot({
+class HotItem {
+  HotItem({
     List<Data>? data,
     num? total,}){
     _data = data;
     _total = total;
   }
 
-  Hot.fromJson(dynamic json) {
+  HotItem.fromJson(dynamic json) {
     if (json['data'] != null) {
       _data = [];
       json['data'].forEach((v) {
@@ -20,9 +20,9 @@ class Hot {
   }
   List<Data>? _data;
   num? _total;
-  Hot copyWith({  List<Data>? data,
+  HotItem copyWith({  List<Data>? data,
     num? total,
-  }) => Hot(  data: data ?? _data,
+  }) => HotItem(  data: data ?? _data,
     total: total ?? _total,
   );
   List<Data>? get data => _data;

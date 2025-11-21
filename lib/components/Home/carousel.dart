@@ -1,9 +1,10 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
-import 'package:my_anime/models/banner_item.dart';
+
+import '../../models/hot_item.dart';
 
 class MySlider extends StatefulWidget {
-  final List<BannerItem> bannerList;
+  final HotItem bannerList;
 
   const MySlider({super.key, required this.bannerList});
 
@@ -18,14 +19,40 @@ class _MySliderState extends State<MySlider> {
 
   //轮播图
   Widget _getCarousel() {
+    // 检查数据是否为空或长度为0
+    if (widget.bannerList.data == null || widget.bannerList.data!.isEmpty) {
+      return Container(
+        height: 200,
+        child: Center(child: Text('暂无数据')),
+      );
+    }
+
     final double screenWidth = MediaQuery.of(context).size.width;
     return CarouselSlider(
       carouselController: _controller,
-      items: List.generate(widget.bannerList.length, (int index) {
+      items: List.generate(widget.bannerList.data!.length, (int index) {
         return Image.network(
-          widget.bannerList[index].url,
+          widget.bannerList.data![index].subject?.images?.large ?? '',
           fit: BoxFit.cover,
           width: screenWidth,
+          loadingBuilder: (BuildContext context, Widget child,
+              ImageChunkEvent? loadingProgress) {
+            if (loadingProgress == null) return child;
+            return Center(
+              child: CircularProgressIndicator(
+                value: loadingProgress.expectedTotalBytes != null
+                    ? loadingProgress.cumulativeBytesLoaded /
+                        loadingProgress.expectedTotalBytes!
+                    : null,
+              ),
+            );
+          },
+          errorBuilder: (context, error, stackTrace) {
+            return Container(
+              color: Colors.grey[300],
+              child: Icon(Icons.error),
+            );
+          },
         );
       }),
       options: CarouselOptions(
@@ -71,13 +98,18 @@ class _MySliderState extends State<MySlider> {
 
   //轮播图指示器
   Widget _dots() {
+    // 检查数据是否为空或长度为0
+    if (widget.bannerList.data == null || widget.bannerList.data!.isEmpty) {
+      return SizedBox.shrink();
+    }
+
     return Positioned(
       right: 5,
       left: 5,
       bottom: 5,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
-        children: List.generate(widget.bannerList.length, (int index) {
+        children: List.generate(widget.bannerList.data!.length, (int index) {
           return GestureDetector(
             onTap: () {
               _controller.animateToPage(index);
@@ -85,7 +117,7 @@ class _MySliderState extends State<MySlider> {
             child: AnimatedContainer(
               duration: Duration(milliseconds: 200),
               height: 5,
-              width: index == _current? 30: 20,
+              width: index == _current ? 30 : 20,
               margin: EdgeInsets.symmetric(horizontal: 2),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(5),

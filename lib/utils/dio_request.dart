@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:my_anime/api/bgm_api.dart';
 
 class DioRequest {
   static Dio? _dio;
@@ -9,7 +10,7 @@ class DioRequest {
   DioRequest._internal() {
     _dio = Dio();
     // 配置dio实例
-    _dio!.options.baseUrl = 'https://api.example.com'; // 替换为你的基础URL
+    _dio!.options.baseUrl = BgmApi.nextBaseUrl; // 基础URL
     _dio!.options.connectTimeout = const Duration(seconds: 10); // 连接超时时间
     _dio!.options.receiveTimeout = const Duration(seconds: 10); // 超时时间
 
@@ -35,16 +36,17 @@ class DioRequest {
   }
 
   /// GET 请求
-  Future<Response> get(
+  Future<Response<T>> get<T>(
     String path, {
     Map<String, dynamic>? queryParameters,
+    Options? options,
   }) async {
     try {
-      final Response response = await _dio!.get(
+      return await _dio!.get<T>(
         path,
         queryParameters: queryParameters,
+        options: options,
       );
-      return response;
     } on DioException catch (e) {
       throw _handleError(e);
     }
@@ -55,12 +57,14 @@ class DioRequest {
     String path, {
     dynamic data,
     Map<String, dynamic>? queryParameters,
+    Options? options,
   }) async {
     try {
       final Response response = await _dio!.post(
         path,
         data: data,
         queryParameters: queryParameters,
+        options: options,
       );
       return response;
     } on DioException catch (e) {
@@ -73,12 +77,14 @@ class DioRequest {
     String path, {
     dynamic data,
     Map<String, dynamic>? queryParameters,
+    Options? options,
   }) async {
     try {
       final Response response = await _dio!.put(
         path,
         data: data,
         queryParameters: queryParameters,
+        options: options,
       );
       return response;
     } on DioException catch (e) {
@@ -90,11 +96,13 @@ class DioRequest {
   Future<Response> delete(
     String path, {
     Map<String, dynamic>? queryParameters,
+    Options? options,
   }) async {
     try {
       final Response response = await _dio!.delete(
         path,
         queryParameters: queryParameters,
+        options: options,
       );
       return response;
     } on DioException catch (e) {
@@ -155,3 +163,6 @@ class DioRequest {
     _dio!.options.headers.remove('Authorization');
   }
 }
+
+// 实例
+final dioRequest = DioRequest();
