@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:media_kit/media_kit.dart';
-import 'package:my_anime/routes/index.dart';
-import 'package:my_anime/controllers/theme_controller.dart';
+import 'package:anime_flow/routes/index.dart';
+import 'package:anime_flow/controllers/theme_controller.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();

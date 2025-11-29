@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:my_anime/api/bgm_api.dart';
+import 'package:anime_flow/api/bgm_api.dart';
 
 import '../models/hot_item.dart';
 import '../utils/dio_request.dart';

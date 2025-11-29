@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:my_anime/pages/Category/index.dart';
-import 'package:my_anime/pages/recommend/index.dart';
-import 'package:my_anime/pages/play/index.dart';
+import 'package:anime_flow/pages/Category/index.dart';
+import 'package:anime_flow/pages/recommend/index.dart';
+import 'package:anime_flow/pages/play/index.dart';
 
 import '../../models/tab_item.dart';
 

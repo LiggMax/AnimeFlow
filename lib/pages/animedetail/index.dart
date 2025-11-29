@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:my_anime/controllers/theme_controller.dart';
-import 'package:my_anime/models/hot_item.dart';
+import 'package:anime_flow/controllers/theme_controller.dart';
+import 'package:anime_flow/models/hot_item.dart';
 import 'package:flutter/services.dart';
 
 import 'head.dart';

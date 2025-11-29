@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:my_anime/api/bgm_api.dart';
+import 'package:anime_flow/api/bgm_api.dart';
 
 class DioRequest {
   static Dio? _dio;

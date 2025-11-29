@@ -2,7 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:my_anime/models/hot_item.dart';
+import 'package:anime_flow/models/hot_item.dart';
 
 class HeadView extends StatelessWidget {
   final Subject data;

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:my_anime/pages/Login/index.dart';
-import 'package:my_anime/pages/animedetail/index.dart';
+import 'package:anime_flow/pages/Login/index.dart';
+import 'package:anime_flow/pages/animedetail/index.dart';
 
 import '../pages/Main/index.dart';
 
