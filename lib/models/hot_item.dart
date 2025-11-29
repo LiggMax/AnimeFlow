@@ -58,7 +58,7 @@ class Data {
 class Subject {
   final int id;
   final String name;
-  final String nameCN;
+  final String? nameCN;
   final int type;
   final String info;
   final Rating rating;

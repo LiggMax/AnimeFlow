@@ -47,18 +47,17 @@ class _MainPageState extends State<MainPage> {
 
   int _currentIndex = 0;
 
+  //TODO 需要做缓存优化
   Widget _getCurrentPage() {
     switch (_currentIndex) {
       case 0:
-        return const HomeView();
+        return const RecommendView();
       case 1:
         return const CategoryView();
       case 2:
-        return const CartView();
-      case 3:
         return const VideoView();
       default:
-        return const HomeView();
+        return const RecommendView();
     }
   }
 

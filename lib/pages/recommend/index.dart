@@ -1,80 +1,96 @@
 import 'package:flutter/material.dart';
-import 'package:my_anime/components/Home/category.dart';
-import 'package:my_anime/components/Home/hot.dart';
-import 'package:my_anime/components/Home/more_list.dart';
-import 'package:my_anime/components/Home/carousel.dart';
-import 'package:my_anime/components/Home/suggestion.dart';
 import 'package:my_anime/models/hot_item.dart';
 
 import '../../api/hot.dart';
 
-class HomeView extends StatefulWidget {
-  const HomeView({super.key});
+class RecommendView extends StatefulWidget {
+  const RecommendView({super.key});
 
   @override
-  State<HomeView> createState() => _HomeViewState();
+  State<RecommendView> createState() => _RecommendViewState();
 }
 
-class _HomeViewState extends State<HomeView> {
+class _RecommendViewState extends State<RecommendView> {
   HotItem? _bannerList;
 
-  List<Widget> _getScrollChildren() {
-    return [
-      // 轮播
-      SliverToBoxAdapter(
-        child: _bannerList == null
-            ? SizedBox(
-                height: 200,
-                child: Center(child: CircularProgressIndicator()),
-              )
-            : MySlider(bannerList: _bannerList!),
-      ),
-      SliverToBoxAdapter(child: SizedBox(height: 10)),
-
-      // 分类
-      SliverToBoxAdapter(child: Category()),
-      SliverToBoxAdapter(child: SizedBox(height: 10)),
-
-      // 推荐
-      SliverToBoxAdapter(
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 10),
-          child: Suggestion(),
-        ),
-      ),
-      SliverToBoxAdapter(child: SizedBox(height: 10)),
-
-      // 爆款推荐
-      SliverToBoxAdapter(
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 10),
-          child: Flex(
-            direction: Axis.horizontal,
-            children: [
-              Expanded(child: Hot()),
-              SizedBox(width: 10),
-              Expanded(child: Hot()),
-            ],
-          ),
-        ),
-      ),
-      SliverToBoxAdapter(child: SizedBox(height: 10)),
-
-      // 商品内容
-      SliverPadding(
-        padding: EdgeInsets.symmetric(horizontal: 10),
-        sliver: SliverGrid.builder(
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            mainAxisSpacing: 10,
-            crossAxisSpacing: 10,
-          ),
-          itemBuilder: (BuildContext context, int index) {
-            return MoreList(index: index);
-          },
-        ),
-      ),
-    ];
+  Widget _buildPage() {
+    return _bannerList == null
+        ? const Center(child: CircularProgressIndicator())
+        : Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 1800),
+              child: GridView.builder(
+                padding: const EdgeInsets.all(10),
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 4,
+                  crossAxisSpacing: 10, // 横向间距
+                  mainAxisSpacing: 10, // 纵向间距
+                  childAspectRatio: 0.7, // 宽高比
+                ),
+                itemCount: _bannerList!.data.length,
+                itemBuilder: (BuildContext context, int index) {
+                  final dataItem = _bannerList!.data[index].subject;
+                  return Card(
+                    color: Colors.blue,
+                    clipBehavior: Clip.hardEdge,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: InkWell(
+                      onTap: () {
+                        print("点击了${dataItem.nameCN ?? dataItem.name}");
+                      },
+                      highlightColor: Colors.white.withOpacity(0.1),
+                      child: Stack(
+                        children: [
+                          Positioned(
+                            top: 0,
+                            left: 0,
+                            bottom: 0,
+                            right: 0,
+                            child: Image.network(
+                              dataItem.images.large,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                          Positioned(
+                            bottom: 0,
+                            left: 0,
+                            right: 0,
+                            child: Container(
+                              padding: const EdgeInsets.all(5),
+                              decoration: const BoxDecoration(
+                                gradient: LinearGradient(
+                                  begin: Alignment.bottomCenter,
+                                  end: Alignment.topCenter,
+                                  colors: [
+                                    //从灰到白
+                                    Colors.black38,
+                                    Colors.transparent,
+                                  ],
+                                ),
+                              ),
+                              child: Text(
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                textAlign: TextAlign.left,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                dataItem.nameCN ?? dataItem.name,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          );
   }
 
   @override
@@ -85,7 +101,7 @@ class _HomeViewState extends State<HomeView> {
 
   void getBannerList() async {
     try {
-      final bannerList = await getHotApi(6, 0);
+      final bannerList = await getHotApi(20, 0);
       if (mounted) {
         setState(() {
           _bannerList = bannerList;
@@ -104,6 +120,6 @@ class _HomeViewState extends State<HomeView> {
 
   @override
   Widget build(BuildContext context) {
-    return CustomScrollView(slivers: _getScrollChildren());
+    return Scaffold(appBar: AppBar(), body: _buildPage());
   }
 }
