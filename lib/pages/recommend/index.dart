@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:my_anime/controllers/theme_controller.dart';
 import 'package:my_anime/models/hot_item.dart';
 
 import '../../api/hot.dart';
@@ -33,14 +35,13 @@ class _RecommendViewState extends State<RecommendView> {
                     itemBuilder: (BuildContext context, int index) {
                       final dataItem = _bannerList!.data[index].subject;
                       return Card(
-                        color: Colors.blue,
                         clipBehavior: Clip.hardEdge,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: InkWell(
                           onTap: () {
-                            print("点击了${dataItem.nameCN ?? dataItem.name}");
+                            Get.toNamed("/anime_detail", arguments: dataItem);
                           },
                           highlightColor: Colors.white.withOpacity(0.1),
                           child: Stack(
@@ -141,10 +142,22 @@ class _RecommendViewState extends State<RecommendView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Row(
+        title: Row(
           children: [
-            Expanded(child: Text("推荐")),
-            Icon(Icons.settings),
+            const Expanded(child: Text("推荐")),
+            GetBuilder<ThemeController>(
+              builder: (controller) {
+                return IconButton(
+                  icon: Icon(
+                    controller.isDarkMode ? Icons.brightness_7 : Icons.brightness_4,
+                    color: controller.isDarkMode ? Colors.white : Colors.black,
+                  ),
+                  onPressed: () {
+                    controller.toggleTheme();
+                  },
+                );
+              },
+            ),
           ],
         ),
       ),

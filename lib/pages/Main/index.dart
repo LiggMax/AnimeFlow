@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:my_anime/pages/Cart/index.dart';
 import 'package:my_anime/pages/Category/index.dart';
 import 'package:my_anime/pages/recommend/index.dart';
 import 'package:my_anime/pages/play/index.dart';
