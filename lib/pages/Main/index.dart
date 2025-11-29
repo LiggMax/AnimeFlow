@@ -38,7 +38,7 @@ class _MainPageState extends State<MainPage> {
     return _tabs.map((tab) {
       return NavigationDestination(
         icon: Icon(tab.icon),
-        selectedIcon: Icon(tab.activeIcon),
+        selectedIcon: Icon(tab.activeIcon,color: Theme.of(context).primaryColor,),
         label: tab.title,
       );
     }).toList();
@@ -63,9 +63,7 @@ class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: _getCurrentPage(),
-      ),
+      body: _getCurrentPage(),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _currentIndex,
         onDestinationSelected: (index) {

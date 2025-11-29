@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:my_anime/controllers/theme_controller.dart';
 import 'package:my_anime/models/hot_item.dart';
+import 'package:flutter/services.dart';
+
+import 'head.dart';
 
 class AnimeDetailPage extends StatefulWidget {
   const AnimeDetailPage({super.key});
@@ -10,20 +14,33 @@ class AnimeDetailPage extends StatefulWidget {
 }
 
 class _AnimeDetailPageState extends State<AnimeDetailPage> {
-  Subject? _animeData;
+  late Subject animeData;
 
   @override
   void initState() {
     super.initState();
-    _animeData = Get.arguments as Subject;
+    animeData = Get.arguments as Subject;
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final data = _animeData!;
     return Scaffold(
-      appBar: AppBar(title: Text(data.nameCN ?? data.name)),
-      body: Center(child: Text('Anime Detail Page')),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            HeadView(data: animeData),
+            SizedBox(height: 10),
+            Column(
+              children: List<Widget>.generate(105, (index) => Text('$index')),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
