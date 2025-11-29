@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:anime_flow/models/hot_item.dart';
@@ -34,20 +36,34 @@ class _AnimeDetailPageState extends State<AnimeDetailPage> {
       child: Scaffold(
         body: CustomScrollView(
           slivers: [
+            /// AppBar
             SliverAppBar(
               pinned: true,
-              expandedHeight: 300,
-              flexibleSpace: FlexibleSpaceBar(
-                background: Image.network(
-                  animeData.images.large,
-                  fit: BoxFit.cover,
+              expandedHeight: 30,
+              backgroundColor: Colors.transparent,
+            ),
+
+            /// AnimeDetail head
+            SliverToBoxAdapter(
+              child: Container(
+                height: 300,
+                child: ImageFiltered(
+                  imageFilter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                  child: Image.network(
+                    animeData.images.large,
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
             ),
+
+            /// TabBar
             SliverPersistentHeader(
               delegate: _StickyTab(tabList: tabList),
-              pinned: true, // 添加这行使Tab吸顶
+              pinned: true,
             ),
+
+            /// TabBarView
             SliverFillRemaining(
               child: TabBarView(
                 children: [
@@ -82,10 +98,10 @@ class _StickyTab extends SliverPersistentHeaderDelegate {
   }
 
   @override
-  double get maxExtent => 30;
+  double get maxExtent => 48;
 
   @override
-  double get minExtent => 30;
+  double get minExtent => 48;
 
   @override
   bool shouldRebuild(covariant SliverPersistentHeaderDelegate oldDelegate) {
