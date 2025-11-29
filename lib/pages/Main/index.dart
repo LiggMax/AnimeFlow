@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:my_anime/pages/Cart/index.dart';
 import 'package:my_anime/pages/Category/index.dart';
-import 'package:my_anime/pages/Home/index.dart';
-import 'package:my_anime/pages/Video/index.dart';
+import 'package:my_anime/pages/recommend/index.dart';
+import 'package:my_anime/pages/play/index.dart';
 
 import '../../models/tab_item.dart';
 
@@ -17,7 +17,7 @@ class _MainPageState extends State<MainPage> {
   final List<TabItem> _tabs = [
     TabItem(
       type: TabType.home,
-      title: "首页",
+      title: "推荐",
       icon: Icons.home,
       activeIcon: Icons.home_filled,
     ),
@@ -26,12 +26,6 @@ class _MainPageState extends State<MainPage> {
       title: "分类",
       icon: Icons.category_outlined,
       activeIcon: Icons.category,
-    ),
-    TabItem(
-      type: TabType.cart,
-      title: "购物车",
-      icon: Icons.miscellaneous_services_outlined,
-      activeIcon: Icons.settings,
     ),
     TabItem(
       type: TabType.profile,
