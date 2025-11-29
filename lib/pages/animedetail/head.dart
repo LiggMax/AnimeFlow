@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/widget_previews.dart';
 import 'package:get/get.dart';
 import 'package:anime_flow/models/hot_item.dart';
 

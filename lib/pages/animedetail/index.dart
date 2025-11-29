@@ -1,110 +1,136 @@
-import 'dart:ui';
-
+import 'package:anime_flow/controllers/title_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:anime_flow/models/hot_item.dart';
 
-import 'head.dart';
-
-class AnimeDetailPage extends StatefulWidget {
-  const AnimeDetailPage({super.key});
-
+class StickyCategoryPage extends StatefulWidget {
   @override
-  State<AnimeDetailPage> createState() => _AnimeDetailPageState();
+  State<StickyCategoryPage> createState() => _StickyCategoryPageState();
 }
 
-class _AnimeDetailPageState extends State<AnimeDetailPage> {
-  late Subject animeData;
+class _StickyCategoryPageState extends State<StickyCategoryPage>
+    with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+  double _appBarOpacity = 0.0;
+
+  final titleList = ["推荐", "热门", "最新", "分类 A", "分类 B", "分类 C"];
 
   @override
   void initState() {
     super.initState();
-    animeData = Get.arguments as Subject;
-  }
 
-  @override
-  void dispose() {
-    super.dispose();
+    Get.put(TitleController());
+
+    _tabController = TabController(length: titleList.length, vsync: this);
+
+    // tab 切换时更新标题
+    _tabController.addListener(() {
+      if (_tabController.indexIsChanging == false) {
+        Get.find<TitleController>().updateTitle(titleList[_tabController.index]);
+      }
+    });
+
+    // 初始标题
+    Get.find<TitleController>().updateTitle(titleList[0]);
   }
 
   @override
   Widget build(BuildContext context) {
-    List<Tab> tabList = [Tab(text: '简介'), Tab(text: '评论'), Tab(text: '相关')];
+    final titleController = Get.find<TitleController>();
 
-    return DefaultTabController(
-      length: tabList.length,
-      child: Scaffold(
-        body: CustomScrollView(
-          slivers: [
-            /// AppBar
-            SliverAppBar(
-              pinned: true,
-              expandedHeight: 30,
-              backgroundColor: Colors.transparent,
-            ),
+    return Scaffold(
+      body: NotificationListener<ScrollNotification>(
+        onNotification: (scroll) {
+          if (scroll.metrics.axis == Axis.vertical) {
+            double offset = scroll.metrics.pixels;
 
-            /// AnimeDetail head
-            SliverToBoxAdapter(
-              child: Container(
-                height: 300,
-                child: ImageFiltered(
-                  imageFilter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                  child: Image.network(
-                    animeData.images.large,
+            // 背景图高度
+            double trigger = 200;
+
+            setState(() {
+              _appBarOpacity = (offset / trigger).clamp(0, 1);
+            });
+          }
+          return false;
+        },
+        child: NestedScrollView(
+          headerSliverBuilder: (context, innerBoxIsScrolled) {
+            return [
+              /// 顶部透明 → 不透明 AppBar
+              SliverAppBar(
+                pinned: true,
+                expandedHeight: 200,
+                backgroundColor: Colors.white.withOpacity(_appBarOpacity),
+                elevation: 0,
+                title: Obx(() => Opacity(
+                  opacity: _appBarOpacity,
+                  child: Text(
+                    titleController.currentTitle.value,
+                    style: TextStyle(color: Colors.black),
+                  ),
+                )),
+                flexibleSpace: FlexibleSpaceBar(
+                  collapseMode: CollapseMode.parallax,
+                  background: Image.network(
+                    "https://picsum.photos/800/600",
                     fit: BoxFit.cover,
                   ),
                 ),
               ),
-            ),
 
-            /// TabBar
-            SliverPersistentHeader(
-              delegate: _StickyTab(tabList: tabList),
-              pinned: true,
-            ),
-
-            /// TabBarView
-            SliverFillRemaining(
-              child: TabBarView(
-                children: [
-                  Center(child: Text('简介')),
-                  Center(child: Text('评论')),
-                  Center(child: Text('相关')),
-                ],
+              /// 吸顶 TabBar
+              SliverPersistentHeader(
+                pinned: true,
+                delegate: _StickyTabBarDelegate(
+                  TabBar(
+                    controller: _tabController,
+                    isScrollable: true,
+                    labelColor: Colors.red,
+                    unselectedLabelColor: Colors.grey,
+                    indicatorColor: Colors.red,
+                    tabs: titleList.map((e) => Tab(text: e)).toList(),
+                  ),
+                ),
               ),
-            ),
-          ],
+            ];
+          },
+
+          /// TabBarView 内容
+          body: TabBarView(
+            controller: _tabController,
+            children: titleList.map((title) {
+              return Center(
+                child: Text("页面内容：$title",
+                    style: TextStyle(fontSize: 24)),
+              );
+            }).toList(),
+          ),
         ),
       ),
     );
   }
 }
 
-class _StickyTab extends SliverPersistentHeaderDelegate {
-  final List<Tab> tabList;
+/// TabBar 粘住吸顶
+class _StickyTabBarDelegate extends SliverPersistentHeaderDelegate {
+  final TabBar tabBar;
 
-  _StickyTab({required this.tabList});
+  _StickyTabBarDelegate(this.tabBar);
+
+  @override
+  double get minExtent => tabBar.preferredSize.height;
+
+  @override
+  double get maxExtent => tabBar.preferredSize.height;
 
   @override
   Widget build(
-    BuildContext context,
-    double shrinkOffset,
-    bool overlapsContent,
-  ) {
+      BuildContext context, double shrinkOffset, bool overlapsContent) {
     return Container(
       color: Colors.white,
-      child: TabBar(tabs: tabList),
+      child: tabBar,
     );
   }
 
   @override
-  double get maxExtent => 48;
-
-  @override
-  double get minExtent => 48;
-
-  @override
-  bool shouldRebuild(covariant SliverPersistentHeaderDelegate oldDelegate) {
-    return false;
-  }
+  bool shouldRebuild(_StickyTabBarDelegate oldDelegate) => false;
 }
