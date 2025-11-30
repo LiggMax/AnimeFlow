@@ -20,13 +20,32 @@ class HeadDetail extends StatelessWidget {
     return Stack(
       children: [
         Positioned.fill(
-          child: ImageFiltered(
-            imageFilter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
-            child: Image.network(
-              subject.images.large,
-              fit: BoxFit.cover,
-              height: contentHeight,
-              width: MediaQuery.of(context).size.width,
+          child: IgnorePointer(
+            child: Opacity(
+              opacity: 0.4,
+              child: LayoutBuilder(
+                builder: (context, boxConstraints) {
+                  return ImageFiltered(
+                    imageFilter: ImageFilter.blur(sigmaX: 15.0, sigmaY: 15.0),
+                    child: ShaderMask(
+                      shaderCallback: (Rect bounds) {
+                        return const LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [Colors.white, Colors.transparent],
+                          stops: [0.8, 1],
+                        ).createShader(bounds);
+                      },
+                      child: Image.network(
+                        subject.images.large,
+                        width: boxConstraints.maxWidth,
+                        height: boxConstraints.maxHeight,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  );
+                },
+              ),
             ),
           ),
         ),
@@ -75,7 +94,6 @@ class HeadDetail extends StatelessWidget {
                 ),
               ],
             ),
-
           ),
         ),
       ],
