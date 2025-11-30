@@ -1,5 +1,6 @@
 import 'package:anime_flow/models/hot_item.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
@@ -20,7 +21,12 @@ class _PlayPageState extends State<PlayPage> {
   void initState() {
     super.initState();
     subject = Get.arguments as Subject;
-    player.open(Media('https://user-images.githubusercontent.com/28951144/229373695-22f88f13-d18f-4288-9bf1-c3e078d83722.mp4'));
+
+    player.open(
+      Media(
+        'https://user-images.githubusercontent.com/28951144/229373695-22f88f13-d18f-4288-9bf1-c3e078d83722.mp4',
+      ),
+    );
   }
 
   // 视频播放区域
@@ -52,6 +58,16 @@ class _PlayPageState extends State<PlayPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(body: Column(children: [playVideo(), content()]));
+    return Scaffold(
+      appBar: AppBar(
+        toolbarHeight: 0,
+        backgroundColor: Colors.black,
+        systemOverlayStyle: SystemUiOverlayStyle.light,
+      ),
+      body: SafeArea(
+        top: false,
+        child: Column(children: [playVideo(), content()]),
+      ),
+    );
   }
 }
