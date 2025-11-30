@@ -1,23 +1,33 @@
+import 'package:anime_flow/models/hot_item.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 
-class VideoPage extends StatefulWidget {
-  const VideoPage({super.key});
+class PlayPage extends StatefulWidget {
+  const PlayPage({super.key});
 
   @override
-  State<VideoPage> createState() => _VideoPageState();
+  State<PlayPage> createState() => _PlayPageState();
 }
 
-class _VideoPageState extends State<VideoPage> {
+class _PlayPageState extends State<PlayPage> {
+  late Subject subject;
   late final player = Player();
   late final controller = VideoController(player);
+
+  @override
+  void initState() {
+    super.initState();
+    subject = Get.arguments as Subject;
+    player.open(Media('https://user-images.githubusercontent.com/28951144/229373695-22f88f13-d18f-4288-9bf1-c3e078d83722.mp4'));
+  }
 
   // 视频播放区域
   Widget playVideo() {
     return AspectRatio(
       aspectRatio: 16 / 9,
-      child: Video(controller: controller,),
+      child: Video(controller: controller),
     );
   }
 
@@ -28,16 +38,10 @@ class _VideoPageState extends State<VideoPage> {
       child: Row(
         children: [
           IconButton(onPressed: () {}, icon: Icon(Icons.keyboard_arrow_down)),
-          Expanded(child: Center(child: Text('标题标题标题标题标题'))),
+          Expanded(child: Center(child: Text(subject.nameCN ?? subject.name))),
         ],
       ),
     );
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    player.open(Media('https://media.w3.org/2010/05/sintel/trailer_hd.mp4'));
   }
 
   @override
@@ -48,6 +52,6 @@ class _VideoPageState extends State<VideoPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(children: [playVideo(), content()]);
+    return Scaffold(body: Column(children: [playVideo(), content()]));
   }
 }

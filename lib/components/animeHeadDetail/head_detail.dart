@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:anime_flow/models/hot_item.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class HeadDetail extends StatelessWidget {
   final Subject subject;
@@ -108,11 +109,11 @@ class HeadDetail extends StatelessWidget {
                       Row(
                         children: [
                           OutlinedButton.icon(
-                            onPressed: () {},
+                            onPressed: () {
+                              Get.toNamed("/play", arguments: subject);
+                            },
                             style: OutlinedButton.styleFrom(
-                              side: BorderSide(
-                                color: themeColor,
-                              ),
+                              side: BorderSide(color: themeColor),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(20),
                               ),

@@ -14,6 +14,8 @@ void main() {
 class MyApp extends StatelessWidget {
   final themeController = Get.put(ThemeController());
 
+  MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     // 初始化主题

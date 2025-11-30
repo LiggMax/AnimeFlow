@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:anime_flow/models/hot_item.dart';
+import 'package:get/get.dart';
 
 class HeadDetailView extends StatelessWidget {
-  final Subject data;
+  final Subject subject;
 
-  const HeadDetailView({super.key, required this.data});
+  const HeadDetailView({super.key, required this.subject});
 
   @override
   Widget build(BuildContext context) {
@@ -20,11 +21,11 @@ class HeadDetailView extends StatelessWidget {
         children: [
           // 左侧海报
           Hero(
-            tag: data.id,
+            tag: subject.id,
             child: ClipRRect(
               borderRadius: BorderRadius.circular(6.0),
               child: Image.network(
-                data.images.large,
+                subject.images.large,
                 width: 130,
                 height: 190,
                 fit: BoxFit.cover,
@@ -40,7 +41,7 @@ class HeadDetailView extends StatelessWidget {
             children: [
               // 标题
               Text(
-                data.nameCN ?? data.name,
+                subject.nameCN ?? subject.name,
                 style: const TextStyle(
                   color: Colors.white,
                   fontSize: 18,
@@ -65,7 +66,7 @@ class HeadDetailView extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
-                  data.info.split(' / ').first, // 尝试提取第一段信息作为日期
+                  subject.info.split(' / ').first, // 尝试提取第一段信息作为日期
                   style: const TextStyle(color: Colors.white70, fontSize: 10),
                 ),
               ),
@@ -75,7 +76,7 @@ class HeadDetailView extends StatelessWidget {
               Row(
                 children: [
                   Text(
-                    "${data.rating.score}",
+                    "${subject.rating.score}",
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 24,
@@ -90,7 +91,7 @@ class HeadDetailView extends StatelessWidget {
                       Row(
                         children: List.generate(5, (index) {
                           // 简单的星级计算
-                          var score = data.rating.score / 2;
+                          var score = subject.rating.score / 2;
                           IconData icon = Icons.star_border;
                           if (index < score.floor()) {
                             icon = Icons.star;
@@ -102,7 +103,7 @@ class HeadDetailView extends StatelessWidget {
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        "${data.rating.total} 人评 | #${data.rating.rank}",
+                        "${subject.rating.total} 人评 | #${subject.rating.rank}",
                         style: const TextStyle(
                           color: Colors.white54,
                           fontSize: 10,
@@ -116,7 +117,7 @@ class HeadDetailView extends StatelessWidget {
               const SizedBox(height: 8),
               // 收藏状态 (因接口缺少此数据，暂时使用Total模拟展示格式)
               Text(
-                "${data.rating.total * 3} 收藏 / ${data.rating.total * 2} 在看 / ${data.rating.total ~/ 10} 抛弃",
+                "${subject.rating.total * 3} 收藏 / ${subject.rating.total * 2} 在看 / ${subject.rating.total ~/ 10} 抛弃",
                 style: const TextStyle(color: Colors.white, fontSize: 11),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
@@ -131,7 +132,8 @@ class HeadDetailView extends StatelessWidget {
                   SizedBox(
                     height: 32,
                     child: OutlinedButton.icon(
-                      onPressed: () {},
+                      onPressed: () {
+                      },
                       style: OutlinedButton.styleFrom(
                         side: const BorderSide(color: Colors.white38),
                         shape: RoundedRectangleBorder(
