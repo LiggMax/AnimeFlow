@@ -116,10 +116,8 @@ class _AnimeDetailPageState extends State<AnimeDetailPage>
                   TabBar(
                     controller: _tabController,
                     labelColor: primaryColor,
-                    unselectedLabelColor: Colors.grey,
                     indicatorColor: primaryColor,
                     tabs: titleList.map((e) => Tab(text: e)).toList(),
-                    indicatorSize: TabBarIndicatorSize.tab,
                   ),
                 ),
               ),
