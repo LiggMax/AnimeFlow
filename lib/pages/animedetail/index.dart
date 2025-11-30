@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:anime_flow/components/animeHeadDetail/head_detail.dart';
 import 'package:anime_flow/models/hot_item.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -34,7 +35,7 @@ class _AnimeDetailPageState extends State<AnimeDetailPage>
 
   @override
   Widget build(BuildContext context) {
-    // 基础的AppBar颜色 (例如蓝色)
+    // 基础的AppBar颜色
     const Color baseColor = Colors.grey;
     // 状态栏高度
     final double statusBarHeight = MediaQuery.of(context).padding.top;
@@ -100,18 +101,14 @@ class _AnimeDetailPageState extends State<AnimeDetailPage>
                   flexibleSpace: FlexibleSpaceBar(
                     collapseMode: CollapseMode.pin,
                     background: Container(
-                      // 内容区域
                       padding: EdgeInsets.only(
                         bottom: tabBarHeight, // 底部留出 TabBar 的空间
                       ),
-                      child: ImageFiltered(
-                        imageFilter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                        child: Image.network(
-                          animeDetail.images.large,
-                          fit: BoxFit.cover,
-                          height: _contentHeight,
-                          width: MediaQuery.of(context).size.width,
-                        ),
+                      // 数据内容
+                      child: HeadDetail(
+                        animeDetail,
+                        statusBarHeight: statusBarHeight,
+                        contentHeight: _contentHeight,
                       ),
                     ),
                   ),
