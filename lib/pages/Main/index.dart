@@ -61,7 +61,7 @@ class _MainPageState extends State<MainPage> {
             _pageCache[index] = const CategoryView();
             break;
           case 2:
-            _pageCache[index] = const VideoView();
+            _pageCache[index] = const VideoPage();
             break;
         }
       }

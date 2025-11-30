@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 
-class VideoView extends StatefulWidget {
-  const VideoView({super.key});
+class VideoPage extends StatefulWidget {
+  const VideoPage({super.key});
 
   @override
-  State<VideoView> createState() => _VideoViewState();
+  State<VideoPage> createState() => _VideoPageState();
 }
 
-class _VideoViewState extends State<VideoView> {
+class _VideoPageState extends State<VideoPage> {
   late final player = Player();
   late final controller = VideoController(player);
 

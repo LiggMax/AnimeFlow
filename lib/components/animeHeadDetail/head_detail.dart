@@ -17,6 +17,8 @@ class HeadDetail extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final Color themeColor = Theme.of(context).colorScheme.primary;
+
     return Stack(
       children: [
         Positioned.fill(
@@ -81,23 +83,55 @@ class HeadDetail extends StatelessWidget {
                     ),
                   ),
                 ),
+                SizedBox(width: 5),
                 Flexible(
                   flex: 3, // 文本占3份
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          subject.nameCN ?? subject.name,
-                          style: const TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        subject.nameCN ?? subject.name,
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
                         ),
-                        Text(subject.info),
-                      ],
-                    ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      Text(
+                        subject.info,
+                        style: const TextStyle(fontSize: 12),
+                        maxLines: 6,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const Spacer(),
+                      Row(
+                        children: [
+                          OutlinedButton.icon(
+                            onPressed: () {},
+                            style: OutlinedButton.styleFrom(
+                              side: BorderSide(
+                                color: themeColor,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                              ),
+                            ),
+                            icon: const Icon(
+                              Icons.play_circle_outline,
+                              size: 16,
+                            ),
+                            label: const Text(
+                              "播放",
+                              style: TextStyle(fontSize: 12),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
               ],

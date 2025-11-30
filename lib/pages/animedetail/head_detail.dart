@@ -141,7 +141,7 @@ class HeadDetailView extends StatelessWidget {
                         foregroundColor: Colors.white,
                       ),
                       icon: const Icon(Icons.check_circle_outline, size: 16),
-                      label: const Text("已在看", style: TextStyle(fontSize: 12)),
+                      label: const Text("播放", style: TextStyle(fontSize: 12)),
                     ),
                   ),
                   const SizedBox(width: 8),
