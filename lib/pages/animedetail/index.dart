@@ -39,7 +39,6 @@ class _AnimeDetailPageState extends State<AnimeDetailPage>
     final double statusBarHeight = MediaQuery.of(context).padding.top;
     // TabBar高度 (标准高度)
     const double tabBarHeight = 46.0;
-    final Color primaryColor = Theme.of(context).primaryColor;
 
     return Scaffold(
       // 关键设置：让 Body 内容延伸到 AppBar 后方
@@ -70,11 +69,10 @@ class _AnimeDetailPageState extends State<AnimeDetailPage>
                     duration: const Duration(milliseconds: 300),
                     child: Text(
                       animeDetail.nameCN ?? animeDetail.name,
-                      style: const TextStyle(color: Colors.white),
                     ),
                   ),
                   leading: IconButton(
-                    icon: const Icon(Icons.arrow_back, color: Colors.white),
+                    icon: const Icon(Icons.arrow_back),
                     onPressed: () {
                       Get.back();
                     },
@@ -115,8 +113,6 @@ class _AnimeDetailPageState extends State<AnimeDetailPage>
                     preferredSize: const Size.fromHeight(tabBarHeight),
                     child: TabBar(
                       controller: _tabController,
-                      labelColor: primaryColor,
-                      indicatorColor: primaryColor,
                       tabs: _tabs.map((name) => Tab(text: name)).toList(),
                     ),
                   ),
