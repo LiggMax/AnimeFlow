@@ -13,95 +13,155 @@ class RecommendView extends StatefulWidget {
 }
 
 class _RecommendViewState extends State<RecommendView> {
-  HotItem? _bannerList;
-
-  Widget _buildPage() {
-    return _bannerList == null
-        ? const Center(child: CircularProgressIndicator())
-        : LayoutBuilder(
-            builder: (context, constraints) {
-              return Center(
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 1800),
-                  child: GridView.builder(
-                    padding: const EdgeInsets.all(10),
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: getCrossAxisCount(constraints),
-                      crossAxisSpacing: 5, // 横向间距
-                      mainAxisSpacing: 5, // 纵向间距
-                      childAspectRatio: 0.7, // 宽高比
-                    ),
-                    itemCount: _bannerList!.data.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      final dataItem = _bannerList!.data[index].subject;
-                      return Card(
-                        clipBehavior: Clip.hardEdge,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: InkWell(
-                          onTap: () {
-                            Get.toNamed("/anime_detail", arguments: dataItem);
-                          },
-                          highlightColor: Colors.white.withOpacity(0.1),
-                          child: Stack(
-                            children: [
-                              Positioned(
-                                top: 0,
-                                left: 0,
-                                bottom: 0,
-                                right: 0,
-                                child: Image.network(
-                                  dataItem.images.large,
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                              Positioned(
-                                bottom: 0,
-                                left: 0,
-                                right: 0,
-                                child: Container(
-                                  padding: const EdgeInsets.all(5),
-                                  decoration: const BoxDecoration(
-                                    gradient: LinearGradient(
-                                      begin: Alignment.bottomCenter,
-                                      end: Alignment.topCenter,
-                                      colors: [
-                                        //从灰到白
-                                        Colors.black38,
-                                        Colors.transparent,
-                                      ],
-                                    ),
-                                  ),
-                                  child: Text(
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                    textAlign: TextAlign.left,
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                    dataItem.nameCN ?? dataItem.name,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              );
-            },
-          );
-  }
+  final List<Data> _dataList = [];
+  bool _isLoading = false;
+  int _offset = 0;
+  final int _limit = 20;
+  bool _hasMore = true;
+  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
-    getBannerList(); // 在初始化时调用获取banner列表的方法
+    _loadData();
+
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels >=
+          _scrollController.position.maxScrollExtent - 200) {
+        _loadData();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _loadData() async {
+    if (_isLoading || !_hasMore) return;
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final hotItem = await getHotApi(_limit, _offset);
+
+      if (mounted) {
+        setState(() {
+          _dataList.addAll(hotItem.data);
+          _offset += hotItem.data.length;
+          if (hotItem.data.length < _limit) {
+            _hasMore = false;
+          }
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      print('加载失败: $e');
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
+  
+  Widget _buildPage() {
+    if (_dataList.isEmpty && _isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 1800),
+            child: GridView.builder(
+              controller: _scrollController,
+              padding: const EdgeInsets.all(10),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: getCrossAxisCount(constraints),
+                crossAxisSpacing: 5, // 横向间距
+                mainAxisSpacing: 5, // 纵向间距
+                childAspectRatio: 0.7, // 宽高比
+              ),
+              itemCount: _dataList.length + 1,
+              itemBuilder: (BuildContext context, int index) {
+                if (index == _dataList.length) {
+                  return _hasMore
+                      ? const Center(child: CircularProgressIndicator())
+                      : const Center(child: Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Text("没有更多了"),
+                        ));
+                }
+
+                final dataItem = _dataList[index].subject;
+                return Card(
+                  clipBehavior: Clip.hardEdge,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: InkWell(
+                    onTap: () {
+                      Get.toNamed("/anime_detail", arguments: dataItem);
+                    },
+                    highlightColor: Colors.white.withValues(alpha: 0.1),
+                    child: Stack(
+                      children: [
+                        Positioned(
+                          top: 0,
+                          left: 0,
+                          bottom: 0,
+                          right: 0,
+                          child: Image.network(
+                            dataItem.images.large,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                        Positioned(
+                          bottom: 0,
+                          left: 0,
+                          right: 0,
+                          child: Container(
+                            padding: const EdgeInsets.all(5),
+                            decoration: const BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.bottomCenter,
+                                end: Alignment.topCenter,
+                                colors: [
+                                  //从灰到白
+                                  Colors.black38,
+                                  Colors.transparent,
+                                ],
+                              ),
+                            ),
+                            child: Text(
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              textAlign: TextAlign.left,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              dataItem.nameCN ?? dataItem.name,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        );
+      },
+    );
   }
 
   int getCrossAxisCount(BoxConstraints constraints) {
@@ -116,25 +176,6 @@ class _RecommendViewState extends State<RecommendView> {
       return 3; // 较大手机屏
     } else {
       return 3; // 较小手机屏
-    }
-  }
-
-  void getBannerList() async {
-    try {
-      final bannerList = await getHotApi(20, 0);
-      if (mounted) {
-        setState(() {
-          _bannerList = bannerList;
-        });
-      }
-    } catch (e) {
-      print('获取Banner列表失败: $e');
-      // 即使出错也要更新状态，避免无限loading
-      if (mounted) {
-        setState(() {
-          _bannerList = null;
-        });
-      }
     }
   }
 

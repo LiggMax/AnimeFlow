@@ -13,6 +13,9 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
+  // 使用 GlobalKey 保持 IndexedStack 的状态，防止在布局切换（Row <-> Column）时页面重构
+  final GlobalKey _bodyKey = GlobalKey();
+
   final List<TabItem> _tabs = [
     TabItem(
       type: TabType.home,
@@ -34,45 +37,83 @@ class _MainPageState extends State<MainPage> {
     ),
   ];
 
-  List<NavigationDestination> _getTabBarWidget() {
-    return _tabs.map((tab) {
-      return NavigationDestination(
-        icon: Icon(tab.icon),
-        selectedIcon: Icon(tab.activeIcon,color: Theme.of(context).primaryColor,),
-        label: tab.title,
-      );
-    }).toList();
+  // 懒加载页面缓存
+  final List<Widget?> _pageCache = List.filled(3, null);
+
+  @override
+  void initState() {
+    super.initState();
+    // 默认初始化第一个页面
+    _pageCache[0] = const RecommendView();
   }
 
   int _currentIndex = 0;
 
-  //TODO 需要做缓存优化
-  Widget _getCurrentPage() {
-    switch (_currentIndex) {
-      case 0:
-        return const RecommendView();
-      case 1:
-        return const CategoryView();
-      case 2:
-        return const VideoView();
-      default:
-        return const RecommendView();
-    }
+  void _onDestinationSelected(int index) {
+    setState(() {
+      _currentIndex = index;
+      if (_pageCache[index] == null) {
+        switch (index) {
+          case 0:
+            _pageCache[index] = const RecommendView();
+            break;
+          case 1:
+            _pageCache[index] = const CategoryView();
+            break;
+          case 2:
+            _pageCache[index] = const VideoView();
+            break;
+        }
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    // 使用 MediaQuery 获取宽度，判断是否为桌面端（宽屏）
+    final bool isDesktop = MediaQuery.of(context).size.width >= 640;
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Scaffold(
-      body: _getCurrentPage(),
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: _currentIndex,
-        onDestinationSelected: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-        },
-        destinations: _getTabBarWidget(),
+      body: Row(
+        children: [
+          if (isDesktop)
+            NavigationRail(
+              backgroundColor: Colors.black12.withValues(alpha: 0.04) ,
+              selectedIndex: _currentIndex,
+              groupAlignment: 1,
+              onDestinationSelected: _onDestinationSelected,
+              labelType: NavigationRailLabelType.all,
+              destinations: _tabs.map((tab) {
+                return NavigationRailDestination(
+                  icon: Icon(tab.icon),
+                  selectedIcon: Icon(tab.activeIcon, color: colorScheme.primary),
+                  label: Text(tab.title),
+                );
+              }).toList(),
+            ),
+          Expanded(
+            child: IndexedStack(
+              key: _bodyKey,
+              index: _currentIndex,
+              children: _pageCache.map((e) => e ?? const SizedBox.shrink()).toList(),
+            ),
+          ),
+        ],
       ),
+      bottomNavigationBar: isDesktop
+          ? null
+          : NavigationBar(
+              selectedIndex: _currentIndex,
+              onDestinationSelected: _onDestinationSelected,
+              destinations: _tabs.map((tab) {
+                return NavigationDestination(
+                  icon: Icon(tab.icon),
+                  selectedIcon: Icon(tab.activeIcon, color: colorScheme.primary),
+                  label: tab.title,
+                );
+              }).toList(),
+            ),
     );
   }
 }
