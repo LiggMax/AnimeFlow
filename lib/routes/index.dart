@@ -8,6 +8,6 @@ Map<String, Widget Function(BuildContext)> getRootRoutes() {
   return {
     "/": (context) => MainPage(),
     "/login": (context) => LoginPage(),
-    "/anime_detail": (context) => StickyCategoryPage(),
+    "/anime_detail": (context) => AnimeDetailPage(),
   };
 }
