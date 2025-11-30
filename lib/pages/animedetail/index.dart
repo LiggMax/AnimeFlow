@@ -35,8 +35,6 @@ class _AnimeDetailPageState extends State<AnimeDetailPage>
 
   @override
   Widget build(BuildContext context) {
-    // 基础的AppBar颜色
-    const Color baseColor = Colors.grey;
     // 状态栏高度
     final double statusBarHeight = MediaQuery.of(context).padding.top;
     // TabBar高度 (标准高度)
@@ -85,7 +83,6 @@ class _AnimeDetailPageState extends State<AnimeDetailPage>
                   floating: false,
                   snap: false,
                   // 动态设置背景色
-                  backgroundColor: baseColor,
                   elevation: _isPinned ? 4.0 : 0.0,
                   forceElevated: _isPinned,
 

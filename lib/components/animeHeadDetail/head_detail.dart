@@ -66,13 +66,21 @@ class HeadDetail extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Flexible(
-                  flex: 2, // 海报占2份
+                  flex: 2,
                   child: AspectRatio(
                     aspectRatio: 2 / 3,
-                    child: Image.network(subject.images.large),
+                    child: Container(
+                      clipBehavior: Clip.hardEdge,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                      child: Image.network(
+                        subject.images.large,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
                   ),
                 ),
-                SizedBox(width: 16), // 间距
                 Flexible(
                   flex: 3, // 文本占3份
                   child: Padding(
