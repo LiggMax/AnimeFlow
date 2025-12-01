@@ -26,59 +26,50 @@ class _PlayPageState extends State<PlayPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        toolbarHeight: 0,
-        backgroundColor: Colors.black,
-        systemOverlayStyle: SystemUiOverlayStyle.light.copyWith(
-          systemNavigationBarColor: Colors.transparent,
-        ),
-      ),
-      extendBody: true,
-      body: LayoutBuilder(builder: (context, constraints) {
-        final bool isWideScreen = constraints.maxWidth > 600;
-        return buildLayout(isWideScreen);
-      }),
-    );
-  }
-
-  Widget buildLayout(bool isWide) {
-    if (isWide) {
-      return SafeArea(
-        bottom: false,
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              child: Container(
-                color: Colors.black,
-                child: Center(
-                  child: VideoView(key: _videoKey),
+    return LayoutBuilder(builder: (context, constraints) {
+      final bool isWideScreen = constraints.maxWidth > 600;
+      return isWideScreen
+          ? Scaffold(
+              body: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Container(
+                    color: Colors.black,
+                    child: Center(
+                      child: VideoView(key: _videoKey),
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  width: 300,
+                  child: ContentView(subject, key: _contentKey),
+                ),
+              ],
+            ))
+          : Scaffold(
+              appBar: AppBar(
+                toolbarHeight: 0,
+                backgroundColor: Colors.black,
+                systemOverlayStyle: SystemUiOverlayStyle.light.copyWith(
+                  systemNavigationBarColor: Colors.transparent,
                 ),
               ),
-            ),
-            SizedBox(
-              width: 300,
-              child: ContentView(subject, key: _contentKey),
-            ),
-          ],
-        ),
-      );
-    } else {
-      return SafeArea(
-        bottom: false,
-        child: Column(
-          children: [
-            AspectRatio(
-              aspectRatio: 16 / 9,
-              child: VideoView(key: _videoKey),
-            ),
-            Expanded(
-              child: ContentView(subject, key: _contentKey),
-            ),
-          ],
-        ),
-      );
-    }
+              body: SafeArea(
+                bottom: false,
+                child: Column(
+                  children: [
+                    AspectRatio(
+                      aspectRatio: 16 / 9,
+                      child: VideoView(key: _videoKey),
+                    ),
+                    Expanded(
+                      child: ContentView(subject, key: _contentKey),
+                    ),
+                  ],
+                ),
+              ),
+            );
+    });
   }
 }
