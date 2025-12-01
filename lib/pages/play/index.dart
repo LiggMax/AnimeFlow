@@ -1,9 +1,10 @@
+import 'package:anime_flow/components/video/video.dart';
 import 'package:anime_flow/models/hot_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:media_kit/media_kit.dart';
-import 'package:media_kit_video/media_kit_video.dart';
+
+import 'content/index.dart';
 
 class PlayPage extends StatefulWidget {
   const PlayPage({super.key});
@@ -14,45 +15,15 @@ class PlayPage extends StatefulWidget {
 
 class _PlayPageState extends State<PlayPage> {
   late Subject subject;
-  late final player = Player();
-  late final controller = VideoController(player);
 
   @override
   void initState() {
     super.initState();
     subject = Get.arguments as Subject;
-
-    player.open(
-      Media(
-        'https://user-images.githubusercontent.com/28951144/229373695-22f88f13-d18f-4288-9bf1-c3e078d83722.mp4',
-      ),
-    );
-  }
-
-  // 视频播放区域
-  Widget playVideo() {
-    return AspectRatio(
-      aspectRatio: 16 / 9,
-      child: Video(controller: controller),
-    );
-  }
-
-  //内容区域
-  Widget content() {
-    return SizedBox(
-      height: 50,
-      child: Row(
-        children: [
-          IconButton(onPressed: () {}, icon: Icon(Icons.keyboard_arrow_down)),
-          Expanded(child: Center(child: Text(subject.nameCN ?? subject.name))),
-        ],
-      ),
-    );
   }
 
   @override
   void dispose() {
-    player.dispose();
     super.dispose();
   }
 
@@ -62,12 +33,62 @@ class _PlayPageState extends State<PlayPage> {
       appBar: AppBar(
         toolbarHeight: 0,
         backgroundColor: Colors.black,
-        systemOverlayStyle: SystemUiOverlayStyle.light,
+        systemOverlayStyle: SystemUiOverlayStyle.light.copyWith(
+          // 设置底部导航栏颜色为透明
+          systemNavigationBarColor: Colors.transparent,
+        ),
       ),
-      body: SafeArea(
-        top: false,
-        child: Column(children: [playVideo(), content()]),
-      ),
+      // 延伸到状态栏和导航栏
+      extendBody: true,
+      body: LayoutBuilder(builder: (context, constraints) {
+        // 判断是否为宽屏 (例如大于 600 像素)
+        final bool isWideScreen = constraints.maxWidth > 600;
+
+        if (isWideScreen) {
+          // 宽屏：水平布局 (左侧内容，右侧播放器)
+          return SafeArea(
+            bottom: false,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                //  播放区 (比例自适应或固定宽度)
+                Expanded(
+                  flex: 2,
+                  child: Center(
+                    child: AspectRatio(
+                      aspectRatio: 16 / 9,
+                      child: const VideoView(),
+                    ),
+                  ),
+                ),
+                //  内容区
+                Expanded(
+                  flex: 1,
+                  child: ContentView(subject),
+                ),
+              ],
+            ),
+          );
+        } else {
+          // 窄屏：竖向布局 (顶部播放器，底部内容)
+          return SafeArea(
+            bottom: false,
+            child: Column(
+              children: [
+                // 1. 播放区
+                const AspectRatio(
+                  aspectRatio: 16 / 9,
+                  child: VideoView(),
+                ),
+                // 2. 内容区
+                Expanded(
+                  child: ContentView(subject),
+                ),
+              ],
+            ),
+          );
+        }
+      }),
     );
   }
 }
