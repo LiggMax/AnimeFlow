@@ -37,8 +37,9 @@ class _PlayPageState extends State<PlayPage> {
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constraints) {
       final bool isWideScreen = constraints.maxWidth > 600;
-      playController.updateIsWideScreen(isWideScreen);// 更新布局状态
+      playController.updateIsWideScreen(isWideScreen); // 更新布局状态
       return isWideScreen
+          // 水平布局
           ? Scaffold(
               body: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -54,12 +55,16 @@ class _PlayPageState extends State<PlayPage> {
                     ),
                   ),
                 ),
-                SizedBox(
-                  width: 300,
-                  child: ContentView(subject, key: _contentKey),
-                ),
+                Obx(() => AnimatedContainer(
+                    duration: Duration(milliseconds: 100),
+                    width: playController.isContentExpanded.value ? 300 : 0,
+                    child: Opacity(
+                      opacity: playController.isContentExpanded.value ? 1 : 0,
+                      child: ContentView(subject, key: _contentKey),
+                    )))
               ],
             ))
+          // 垂直布局
           : Scaffold(
               appBar: AppBar(
                 toolbarHeight: 0,

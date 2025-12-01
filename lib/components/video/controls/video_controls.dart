@@ -88,24 +88,38 @@ class _VideoControlsUiState extends State<VideoControlsUi> {
                   //右侧
                   Row(
                     children: [
-                      Obx(() =>
-                          (defaultTargetPlatform == TargetPlatform.linux ||
-                                      defaultTargetPlatform ==
-                                          TargetPlatform.windows ||
-                                      defaultTargetPlatform ==
-                                          TargetPlatform.macOS) &&
-                                  playPageController.isWideScreen.value
-                              ? IconButton(
-                                  onPressed: () => {},
-                                  padding: EdgeInsets.all(0),
-                                  icon: SvgPicture.asset(
-                                    "lib/assets/icons/right_panel_close.svg",
-                                    width: 30,
-                                    height: 30,
-                                    colorFilter: ColorFilter.mode(
-                                        Colors.white70, BlendMode.srcIn),
-                                  ))
-                              : SizedBox.shrink())
+                      Obx(() => (defaultTargetPlatform ==
+                                      TargetPlatform.linux ||
+                                  defaultTargetPlatform ==
+                                      TargetPlatform.windows ||
+                                  defaultTargetPlatform ==
+                                      TargetPlatform.macOS) &&
+                              playPageController.isWideScreen.value
+                          ? IconButton(
+                              onPressed: () =>
+                                  playPageController.toggleContentExpanded(),
+                              padding: EdgeInsets.all(0),
+                              icon: playPageController.isContentExpanded.value
+                                  ? SvgPicture.asset(
+                                      "lib/assets/icons/right_panel_close.svg",
+                                      width: 30,
+                                      height: 30,
+                                      colorFilter: ColorFilter.mode(
+                                        Colors.white70,
+                                        BlendMode.srcIn,
+                                      ),
+                                    )
+                                  : SvgPicture.asset(
+                                      "lib/assets/icons/left_panel_close.svg",
+                                      width: 30,
+                                      height: 30,
+                                      colorFilter: ColorFilter.mode(
+                                        Colors.white70,
+                                        BlendMode.srcIn,
+                                      ),
+                                    ),
+                            )
+                          : SizedBox.shrink())
                     ],
                   )
                 ],
