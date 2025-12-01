@@ -37,7 +37,10 @@ class _PlayPageState extends State<PlayPage> {
                   child: Container(
                     color: Colors.black,
                     child: Center(
-                      child: VideoView(key: _videoKey),
+                      child: VideoView(
+                        key: _videoKey,
+                        subject: subject,
+                      ),
                     ),
                   ),
                 ),
@@ -61,7 +64,7 @@ class _PlayPageState extends State<PlayPage> {
                   children: [
                     AspectRatio(
                       aspectRatio: 16 / 9,
-                      child: VideoView(key: _videoKey),
+                      child: VideoView(key: _videoKey, subject: subject),
                     ),
                     Expanded(
                       child: ContentView(subject, key: _contentKey),

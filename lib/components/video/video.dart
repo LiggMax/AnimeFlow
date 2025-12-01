@@ -1,10 +1,13 @@
 import 'package:anime_flow/components/video/controls/video_controls.dart';
+import 'package:anime_flow/models/hot_item.dart';
 import 'package:flutter/material.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 
 class VideoView extends StatefulWidget {
-  const VideoView({super.key});
+  final Subject subject;
+
+  const VideoView({super.key, required this.subject});
 
   @override
   State<VideoView> createState() => _VideoViewState();
@@ -36,9 +39,11 @@ class _VideoViewState extends State<VideoView> {
       children: [
         Video(
           controller: controller,
-          controls: (state) => const SizedBox.shrink(),
+          controls: (state) => VideoControlsUi(
+            player,
+            subject: widget.subject,
+          ),
         ),
-        Positioned.fill(child: VideoControlsUi())
       ],
     );
   }

@@ -1,37 +1,41 @@
+import 'package:anime_flow/models/hot_item.dart';
+import 'package:anime_flow/controllers/video/video_controller.dart'
+    as controller;
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:media_kit/media_kit.dart';
+import 'package:media_kit_video/media_kit_video.dart';
 
 ///播放器控件
 class VideoControlsUi extends StatefulWidget {
-  const VideoControlsUi({super.key});
+  final Subject subject;
+  final Player player;
+
+  const VideoControlsUi(this.player, {super.key, required this.subject});
 
   @override
   State<VideoControlsUi> createState() => _VideoControlsUiState();
 }
 
 class _VideoControlsUiState extends State<VideoControlsUi> {
-  bool isFullScreen = false;
+  late controller.VideoController videoController;
 
-  void _toggleFullscreen() {
-    setState(() {
-      isFullScreen = !isFullScreen;
-    });
+  @override
+  void initState() {
+    videoController = Get.put(controller.VideoController(widget.player));
+    super.initState();
+  }
 
-    if (isFullScreen) {
-      SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
-      SystemChrome.setPreferredOrientations(
-          [DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight]);
-      print("进入全屏");
-    } else {
-      SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
-      SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-      print("退出全屏");
-    }
+  @override
+  void dispose() {
+    Get.delete<VideoController>();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    //使用media_kit_video提供的全屏判断
+    bool fullscreen = isFullscreen(context);
     return Stack(fit: StackFit.expand, children: [
       ///顶部
       Positioned(
@@ -52,14 +56,30 @@ class _VideoControlsUiState extends State<VideoControlsUi> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  IconButton(
-                      onPressed: () {
-                        Get.back();
-                      },
-                      icon: Icon(
-                        Icons.arrow_back_ios_new,
-                        color: Colors.white.withValues(alpha: 0.8),
-                      ))
+                  Row(children: [
+                    IconButton(
+                        onPressed: () {
+                          Get.back();
+                        },
+                        icon: Icon(
+                          Icons.arrow_back_ios_new,
+                          color: Colors.white.withValues(alpha: 0.8),
+                        )),
+                    SizedBox(width: 5),
+                    if (fullscreen)
+                      Column(
+                        children: [
+                          Text(
+                            widget.subject.nameCN ?? widget.subject.name,
+                            style: TextStyle(
+                                color: Colors.white70,
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold),
+                          )
+                          //后续添加剧集名称
+                        ],
+                      )
+                  ]),
                 ],
               ),
             ),
@@ -71,7 +91,7 @@ class _VideoControlsUiState extends State<VideoControlsUi> {
           left: 0,
           right: 0,
           child: Container(
-            height: 50,
+            height: 80,
             decoration: BoxDecoration(
               gradient: LinearGradient(colors: [
                 Colors.black.withValues(alpha: 0.5),
@@ -80,26 +100,96 @@ class _VideoControlsUiState extends State<VideoControlsUi> {
             ),
             child: Padding(
               padding: EdgeInsets.all(3),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                //交叉轴底部对齐
-                crossAxisAlignment: CrossAxisAlignment.end,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  IconButton(
-                      onPressed: () {},
-                      icon: Icon(
-                        Icons.volume_up,
-                        color: Colors.white.withValues(alpha: 0.8),
-                      )),
-                  IconButton(
-                      onPressed: () {
-                        _toggleFullscreen();
-                      },
-                      icon: Icon(
-                        size: 33,
-                        Icons.fullscreen,
-                        color: Colors.white.withValues(alpha: 0.8),
-                      ))
+                  // 进度条
+                  SizedBox(
+                    height: 20,
+                    child: Obx(() {
+                      final max = videoController.duration.value.inMilliseconds
+                          .toDouble();
+                      final value = videoController.position.value.inMilliseconds
+                          .toDouble();
+
+                      return SliderTheme(
+                        data: SliderThemeData(
+                          trackHeight: 2,
+                          thumbShape:
+                              RoundSliderThumbShape(enabledThumbRadius: 6),
+                          overlayShape:
+                              RoundSliderOverlayShape(overlayRadius: 10),
+                          activeTrackColor:
+                              Theme.of(context).colorScheme.primary,
+                          inactiveTrackColor: Colors.white.withOpacity(0.3),
+                          thumbColor: Theme.of(context).colorScheme.primary,
+                        ),
+                        child: Slider(
+                          value: value.clamp(0.0, max > 0 ? max : 1.0),
+                          min: 0.0,
+                          max: max > 0 ? max : 1.0,
+                          onChangeStart: (_) => videoController.startDrag(),
+                          onChanged: (v) {
+                            videoController.position.value =
+                                Duration(milliseconds: v.toInt());
+                          },
+                          onChangeEnd: (v) => videoController
+                              .endDrag(Duration(milliseconds: v.toInt())),
+                        ),
+                      );
+                    }),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      AnimatedSwitcher(
+                        duration: Duration(milliseconds: 300),
+                        transitionBuilder:
+                            (Widget child, Animation<double> animation) {
+                          return FadeTransition(
+                            opacity: animation,
+                            child: ScaleTransition(
+                              scale: animation,
+                              child: RotationTransition(
+                                turns: Tween<double>(begin: 0.5, end: 1.0)
+                                    .animate(animation),
+                                child: child,
+                              ),
+                            ),
+                          );
+                        },
+                        child: Obx(() => IconButton(
+                            key: ValueKey<bool>(videoController.isPlaying),
+                            onPressed: videoController.togglePlay,
+                            icon: Icon(
+                              videoController.isPlaying
+                                  ? Icons.pause_rounded
+                                  : Icons.play_arrow_rounded,
+                              size: 33,
+                              color: Colors.white.withValues(alpha: 0.8),
+                            ))),
+                      ),
+                      AnimatedContainer(
+                        duration: Duration(milliseconds: 500),
+                        child: IconButton(
+                          //使用media_kit_video提供的全屏方法
+                          onPressed: () => toggleFullscreen(context),
+                          icon: fullscreen
+                              ? Icon(
+                                  size: 33,
+                                  Icons.fullscreen_exit,
+                                  color: Colors.white.withValues(alpha: 0.8),
+                                )
+                              : Icon(
+                                  size: 33,
+                                  Icons.fullscreen,
+                                  color: Colors.white.withValues(alpha: 0.8),
+                                ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ),
