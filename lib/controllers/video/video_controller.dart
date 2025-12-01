@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:get/get.dart';
 import 'package:media_kit/media_kit.dart';
 
@@ -10,6 +12,11 @@ class VideoController extends GetxController {
   
   // 是否正在拖拽进度条
   final RxBool isDragging = false.obs;
+
+  // 是否显示播放状态图标
+  final RxBool showPlayStatusIcon = false.obs;
+  // 控制图标显示的计时器
+  Timer? _iconTimer;
 
   VideoController(this.player) {
     // 初始化状态，防止 player 已经加载完成导致 stream 不触发
@@ -41,6 +48,7 @@ class VideoController extends GetxController {
     });
   }
 
+  // 播放状态
   bool get isPlaying => _isPlaying.value;
 
   void togglePlay() {
@@ -49,8 +57,19 @@ class VideoController extends GetxController {
     } else {
       player.play();
     }
+    _showIcon();
   }
 
+  // 显示播放状态图标
+  void _showIcon() {
+    showPlayStatusIcon.value = true;
+    _iconTimer?.cancel();
+    _iconTimer = Timer(const Duration(seconds: 3), () {
+      showPlayStatusIcon.value = false;
+    });
+  }
+
+  // 跳转到指定位置
   void seekTo(Duration pos) {
     player.seek(pos);
   }
@@ -64,5 +83,11 @@ class VideoController extends GetxController {
   void endDrag(Duration pos) {
     isDragging.value = false;
     seekTo(pos);
+  }
+
+  @override
+  void onClose() {
+    _iconTimer?.cancel();
+    super.onClose();
   }
 }

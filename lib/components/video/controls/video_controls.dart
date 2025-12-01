@@ -86,6 +86,21 @@ class _VideoControlsUiState extends State<VideoControlsUi> {
             ),
           )),
 
+      ///中间
+
+      Positioned(
+          top: 40,
+          left: 0,
+          right: 0,
+          bottom: 80,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              // 播放状态图标
+              PlayStatusIcon(videoController),
+            ],
+          )),
+
       ///底部
       Positioned(
           bottom: 0,
