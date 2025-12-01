@@ -1,6 +1,8 @@
+import 'package:anime_flow/controllers/play/PlayPageController.dart';
 import 'package:anime_flow/models/hot_item.dart';
 import 'package:anime_flow/controllers/video/video_controller.dart'
     as controller;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -21,10 +23,12 @@ class VideoControlsUi extends StatefulWidget {
 
 class _VideoControlsUiState extends State<VideoControlsUi> {
   late controller.VideoController videoController;
+  late PlayPageController playPageController;
 
   @override
   void initState() {
     videoController = Get.put(controller.VideoController(widget.player));
+    playPageController = Get.put(PlayPageController());
     super.initState();
   }
 
@@ -84,16 +88,24 @@ class _VideoControlsUiState extends State<VideoControlsUi> {
                   //右侧
                   Row(
                     children: [
-                      IconButton(
-                          onPressed: () => {},
-                          padding: EdgeInsets.all(0),
-                          icon: SvgPicture.asset(
-                            "lib/assets/icons/right_panel_close.svg",
-                            width: 30,
-                            height: 30,
-                            colorFilter: ColorFilter.mode(
-                                Colors.white70, BlendMode.srcIn),
-                          ))
+                      Obx(() =>
+                          (defaultTargetPlatform == TargetPlatform.linux ||
+                                      defaultTargetPlatform ==
+                                          TargetPlatform.windows ||
+                                      defaultTargetPlatform ==
+                                          TargetPlatform.macOS) &&
+                                  playPageController.isWideScreen.value
+                              ? IconButton(
+                                  onPressed: () => {},
+                                  padding: EdgeInsets.all(0),
+                                  icon: SvgPicture.asset(
+                                    "lib/assets/icons/right_panel_close.svg",
+                                    width: 30,
+                                    height: 30,
+                                    colorFilter: ColorFilter.mode(
+                                        Colors.white70, BlendMode.srcIn),
+                                  ))
+                              : SizedBox.shrink())
                     ],
                   )
                 ],

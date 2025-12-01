@@ -1,4 +1,5 @@
 import 'package:anime_flow/components/video/video.dart';
+import 'package:anime_flow/controllers/play/PlayPageController.dart';
 import 'package:anime_flow/models/hot_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -15,19 +16,28 @@ class PlayPage extends StatefulWidget {
 
 class _PlayPageState extends State<PlayPage> {
   late Subject subject;
+  late PlayPageController playController;
   final GlobalKey _videoKey = GlobalKey();
   final GlobalKey _contentKey = GlobalKey();
 
   @override
   void initState() {
     super.initState();
+    playController = Get.put(PlayPageController());
     subject = Get.arguments as Subject;
+  }
+
+  @override
+  void dispose() {
+    Get.delete<PlayPageController>();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constraints) {
       final bool isWideScreen = constraints.maxWidth > 600;
+      playController.updateIsWideScreen(isWideScreen);// 更新布局状态
       return isWideScreen
           ? Scaffold(
               body: Row(
