@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
+import 'package:anime_flow/components/video/controls/progress_bar.dart';
 
 ///播放器控件
 class VideoControlsUi extends StatefulWidget {
@@ -103,42 +104,10 @@ class _VideoControlsUiState extends State<VideoControlsUi> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  // 进度条
-                  SizedBox(
-                    height: 20,
-                    child: Obx(() {
-                      final max = videoController.duration.value.inMilliseconds
-                          .toDouble();
-                      final value = videoController.position.value.inMilliseconds
-                          .toDouble();
+                  //视频时间
 
-                      return SliderTheme(
-                        data: SliderThemeData(
-                          trackHeight: 2,
-                          thumbShape:
-                              RoundSliderThumbShape(enabledThumbRadius: 6),
-                          overlayShape:
-                              RoundSliderOverlayShape(overlayRadius: 10),
-                          activeTrackColor:
-                              Theme.of(context).colorScheme.primary,
-                          inactiveTrackColor: Colors.white.withOpacity(0.3),
-                          thumbColor: Theme.of(context).colorScheme.primary,
-                        ),
-                        child: Slider(
-                          value: value.clamp(0.0, max > 0 ? max : 1.0),
-                          min: 0.0,
-                          max: max > 0 ? max : 1.0,
-                          onChangeStart: (_) => videoController.startDrag(),
-                          onChanged: (v) {
-                            videoController.position.value =
-                                Duration(milliseconds: v.toInt());
-                          },
-                          onChangeEnd: (v) => videoController
-                              .endDrag(Duration(milliseconds: v.toInt())),
-                        ),
-                      );
-                    }),
-                  ),
+                  //进度条组件
+                  VideoProgressBar(videoController: videoController),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.center,
