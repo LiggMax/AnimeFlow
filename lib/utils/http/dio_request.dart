@@ -1,7 +1,9 @@
 import 'package:dio/dio.dart';
-import 'package:anime_flow/api/bgm_api.dart';
+import 'package:logger/logger.dart';
 
 class DioRequest {
+  final logger = Logger();
+
   static Dio? _dio;
   static final DioRequest _instance = DioRequest._internal();
 
@@ -10,7 +12,6 @@ class DioRequest {
   DioRequest._internal() {
     _dio = Dio();
     // 配置dio实例
-    _dio!.options.baseUrl = BgmApi.nextBaseUrl; // 基础URL
     _dio!.options.connectTimeout = const Duration(seconds: 10); // 连接超时时间
     _dio!.options.receiveTimeout = const Duration(seconds: 10); // 超时时间
 
@@ -20,15 +21,23 @@ class DioRequest {
         onRequest: (options, handler) {
           // 在请求前添加token等操作
           // options.headers['Authorization'] = 'Bearer your_token';
-          print('请求: ${options.method} ${options.path}');
+          logger.i(
+            'HTTP Request: ${options.method} ${options.path}',
+            time: DateTime.now(),
+            stackTrace: StackTrace.current,
+          );
           return handler.next(options);
         },
         onResponse: (response, handler) {
-          print('响应: ${response.statusCode} ${response.data}');
+          logger.i(
+            'HTTP Response: ${response.statusCode} ${response.data}',
+            time: DateTime.now(),
+            stackTrace: StackTrace.current,
+          );
           return handler.next(response);
         },
         onError: (DioException e, handler) {
-          print('错误: ${e.message}');
+          logger.e('error: ${e.message}');
           return handler.next(e);
         },
       ),

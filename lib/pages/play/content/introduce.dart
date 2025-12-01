@@ -16,19 +16,21 @@ class _IntroduceViewState extends State<IntroduceView> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 10),
-      child: Column(
-        children: [
-          Text(
-            subjectDetail.nameCN ?? subjectDetail.name,
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            textAlign: TextAlign.left,
+        padding: EdgeInsets.all(10),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                subjectDetail.nameCN ?? subjectDetail.name,
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                textAlign: TextAlign.left,
+              ),
+              Text(
+                subjectDetail.info,
+              ),
+            ],
           ),
-          Text(
-            subjectDetail.info,
-          ),
-        ],
-      ),
-    );
+        ));
   }
 }

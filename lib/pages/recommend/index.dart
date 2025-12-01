@@ -1,9 +1,8 @@
+import 'package:anime_flow/http/requests/bgm_request.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:anime_flow/controllers/theme_controller.dart';
 import 'package:anime_flow/models/hot_item.dart';
-
-import '../../api/hot.dart';
 
 class RecommendView extends StatefulWidget {
   const RecommendView({super.key});
@@ -47,7 +46,7 @@ class _RecommendViewState extends State<RecommendView> {
     });
 
     try {
-      final hotItem = await getHotApi(_limit, _offset);
+      final hotItem = await BgmRequest.getHotApi(_limit, _offset);
 
       if (mounted) {
         setState(() {

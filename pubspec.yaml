@@ -55,6 +55,7 @@ dependencies:
   shared_preferences: ^2.5.3
   flutter_launcher_icons: ^0.14.4
   flutter_svg: ^2.2.3
+  logger: ^2.6.2
 
 ##logo图标生成
 #生成命令  dart run flutter_launcher_icons
