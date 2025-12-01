@@ -1,16 +1,19 @@
 import 'dart:ui';
 
 import 'package:anime_flow/models/hot_item.dart';
+import 'package:anime_flow/models/subjects_item.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class HeadDetail extends StatelessWidget {
   final Subject subject;
+  final SubjectsItem? subjectItem;
   final double statusBarHeight;
   final double contentHeight;
 
   const HeadDetail(
-    this.subject, {
+    this.subject,
+    this.subjectItem, {
     super.key,
     required this.statusBarHeight,
     required this.contentHeight,
@@ -22,6 +25,7 @@ class HeadDetail extends StatelessWidget {
 
     return Stack(
       children: [
+        // 背景层
         Positioned.fill(
           child: IgnorePointer(
             child: Opacity(
@@ -52,11 +56,8 @@ class HeadDetail extends StatelessWidget {
             ),
           ),
         ),
-        // Positioned.fill(
-        //   child: Container(
-        //     color: Colors.black.withValues(alpha: 0.3),
-        //   ),
-        // ),
+
+        //数据层
         Positioned(
           top: statusBarHeight + kToolbarHeight,
           left: 5,
@@ -99,11 +100,19 @@ class HeadDetail extends StatelessWidget {
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      Text(
-                        subject.info,
-                        style: const TextStyle(fontSize: 12),
-                        maxLines: 6,
-                        overflow: TextOverflow.ellipsis,
+                      //骨架屏
+                      Card(
+                        color: Colors.transparent,
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(
+                            subjectItem?.airtime?.date ?? '', // 安全访问
+                            style: const TextStyle(
+                                fontSize: 12, fontWeight: FontWeight.bold),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
                       ),
                       const Spacer(),
                       Row(

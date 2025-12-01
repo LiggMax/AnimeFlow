@@ -1,5 +1,7 @@
 import 'package:anime_flow/components/anime_head_detail/head_detail.dart';
+import 'package:anime_flow/http/requests/bgm_request.dart';
 import 'package:anime_flow/models/hot_item.dart';
+import 'package:anime_flow/models/subjects_item.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -14,16 +16,20 @@ class _AnimeDetailPageState extends State<AnimeDetailPage>
     with SingleTickerProviderStateMixin {
   late Subject animeDetail;
   late TabController _tabController;
+  late Future<SubjectsItem?> _subjectsItem;
   final List<String> _tabs = ['Tab A', 'Tab B', 'Tab C'];
   final double _contentHeight = 200.0; // 内容区域的高度
   bool _isPinned = false;
+
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: _tabs.length, vsync: this);
     animeDetail = Get.arguments;
+    _subjectsItem = BgmRequest.getSubjectByIdService(animeDetail.id);
   }
+  
 
   @override
   void dispose() {
@@ -84,13 +90,12 @@ class _AnimeDetailPageState extends State<AnimeDetailPage>
 
                   // 展开高度计算：内容高度 + 状态栏 + Toolbar + TabBar
                   // 这样确保内容区域有足够的空间展示，且不会被 TabBar 遮挡太多
-                  expandedHeight:
-                      _contentHeight +
+                  expandedHeight: _contentHeight +
                       statusBarHeight +
                       kToolbarHeight +
                       tabBarHeight,
 
-                  /// 内容区域
+                  /// 头部内容区域
                   flexibleSpace: FlexibleSpaceBar(
                     collapseMode: CollapseMode.pin,
                     background: Container(
@@ -98,10 +103,16 @@ class _AnimeDetailPageState extends State<AnimeDetailPage>
                         bottom: tabBarHeight, // 底部留出 TabBar 的空间
                       ),
                       // 数据内容
-                      child: HeadDetail(
-                        animeDetail,
-                        statusBarHeight: statusBarHeight,
-                        contentHeight: _contentHeight,
+                      child: FutureBuilder<SubjectsItem?>(
+                        future: _subjectsItem,
+                        builder: (context, snapshot) {
+                          return HeadDetail(
+                            animeDetail,
+                            snapshot.data,
+                            statusBarHeight: statusBarHeight,
+                            contentHeight: _contentHeight,
+                          );
+                        },
                       ),
                     ),
                   ),

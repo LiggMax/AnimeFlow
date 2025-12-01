@@ -46,7 +46,7 @@ class _RecommendViewState extends State<RecommendView> {
     });
 
     try {
-      final hotItem = await BgmRequest.getHotApi(_limit, _offset);
+      final hotItem = await BgmRequest.getHotService(_limit, _offset);
 
       if (mounted) {
         setState(() {

@@ -7,7 +7,7 @@ import 'package:dio/dio.dart';
 
 class BgmRequest {
   /// 获取热门
-  static Future<HotItem> getHotApi(int limit, int offset) async {
+  static Future<HotItem> getHotService(int limit, int offset) async {
     final response = await dioRequest.get(BgmApi.hot,
         queryParameters: {"type": 2, "limit": limit, "offset": offset},
         options: Options(
@@ -16,7 +16,7 @@ class BgmRequest {
   }
 
   ///根据id获取条目
-  static Future<SubjectsItem> getSubjectById(int id) async {
+  static Future<SubjectsItem> getSubjectByIdService(int id) async {
     final response = await dioRequest.get(
         BgmApi.subjectById.replaceFirst('{subjectId}', id.toString()),
         options: Options(
