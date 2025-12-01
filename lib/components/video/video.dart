@@ -24,16 +24,13 @@ class _VideoViewState extends State<VideoView> {
   }
 
   @override
-  void deactivate() {
-    super.deactivate();
+  void dispose() {
     player.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return AspectRatio(
-      aspectRatio: 16 / 9,
-      child: Video(controller: controller),
-    );
+    return  Video(controller: controller);
   }
 }
