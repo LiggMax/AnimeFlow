@@ -1,6 +1,6 @@
 {
-    "name": "anime_flow",
-    "short_name": "anime_flow",
+    "name": "AnimeFlow",
+    "short_name": "AnimeFlow",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

@@ -18,7 +18,7 @@ class _VideoViewState extends State<VideoView> {
     super.initState();
     player.open(
       Media(
-        'https://p3-dcd-sign.byteimg.com/tos-cn-i-f042mdwyw7/7905eccbf0d849c9abd9aef1421e3dca~tplv-jxcbcipi3j-image.image?lk3s=13ddc783&x-expires=1764545530&x-signature=FvI9lbJMwGK4BI%2FNtI9ktvUvM%2Bw%3D',
+        'https://user-images.githubusercontent.com/28951144/229373695-22f88f13-d18f-4288-9bf1-c3e078d83722.mp4',
       ),
     );
   }

@@ -1,4 +1,4 @@
-# anime_flow
+# AnimeFlow
 
 A new Flutter project.
 
