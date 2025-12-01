@@ -27,10 +27,9 @@ class VideoProgressBar extends StatelessWidget {
                 thumbShape: SliderComponentShape.noThumb, // 隐藏滑块
                 overlayShape: SliderComponentShape.noOverlay,
                 activeTrackColor: Colors.white.withValues(alpha: 0.4), // 缓冲颜色
-                inactiveTrackColor: Colors.white.withValues(alpha:0.2), // 底部颜色
-                disabledActiveTrackColor: Colors.white.withValues(alpha:0.4),
+                disabledActiveTrackColor: Colors.white.withValues(alpha: 0.4),
                 disabledThumbColor: Colors.transparent,
-                // 关键点：移除缓冲条默认的Padding，使其与带滑块的进度条对齐
+                // 移除缓冲条默认的Padding，使其与带滑块的进度条对齐
                 trackShape: _CustomTrackShape(),
               ),
               child: Slider(
