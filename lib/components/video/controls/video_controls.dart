@@ -2,6 +2,7 @@ import 'package:anime_flow/models/hot_item.dart';
 import 'package:anime_flow/controllers/video/video_controller.dart'
     as controller;
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
@@ -55,7 +56,6 @@ class _VideoControlsUiState extends State<VideoControlsUi> {
               child: Row(
                 ///两侧对齐
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(children: [
                     IconButton(
@@ -81,6 +81,21 @@ class _VideoControlsUiState extends State<VideoControlsUi> {
                         ],
                       )
                   ]),
+                  //右侧
+                  Row(
+                    children: [
+                      IconButton(
+                          onPressed: () => {},
+                          padding: EdgeInsets.all(0),
+                          icon: SvgPicture.asset(
+                            "lib/assets/icons/right_panel_close.svg",
+                            width: 30,
+                            height: 30,
+                            colorFilter: ColorFilter.mode(
+                                Colors.white70, BlendMode.srcIn),
+                          ))
+                    ],
+                  )
                 ],
               ),
             ),
