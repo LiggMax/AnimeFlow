@@ -1,3 +1,4 @@
+import 'package:anime_flow/components/video/controls/video_controls.dart';
 import 'package:flutter/material.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
@@ -31,6 +32,14 @@ class _VideoViewState extends State<VideoView> {
 
   @override
   Widget build(BuildContext context) {
-    return  Video(controller: controller);
+    return Stack(
+      children: [
+        Video(
+          controller: controller,
+          controls: (state) => const SizedBox.shrink(),
+        ),
+        Positioned.fill(child: VideoControlsUi())
+      ],
+    );
   }
 }

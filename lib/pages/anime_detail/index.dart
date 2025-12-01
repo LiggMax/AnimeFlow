@@ -1,6 +1,4 @@
-import 'dart:ui';
-
-import 'package:anime_flow/components/animeHeadDetail/head_detail.dart';
+import 'package:anime_flow/components/anime_head_detail/head_detail.dart';
 import 'package:anime_flow/models/hot_item.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
