@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
-import 'package:anime_flow/components/video/controls/progress_bar.dart';
+import 'package:anime_flow/components/video/controls/video_ui_components.dart';
 
 ///播放器控件
 class VideoControlsUi extends StatefulWidget {
@@ -103,15 +103,19 @@ class _VideoControlsUiState extends State<VideoControlsUi> {
               padding: EdgeInsets.all(3),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  //视频时间
+                  // 时间显示组件
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 12),
+                    child: VideoTimeDisplay(videoController: videoController),
+                  ),
 
-                  //进度条组件
-                  VideoProgressBar(videoController: videoController),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
+                      // 播放按钮
                       AnimatedSwitcher(
                         duration: Duration(milliseconds: 300),
                         transitionBuilder:
@@ -129,6 +133,7 @@ class _VideoControlsUiState extends State<VideoControlsUi> {
                           );
                         },
                         child: Obx(() => IconButton(
+                            padding: EdgeInsets.all(0),
                             key: ValueKey<bool>(videoController.isPlaying),
                             onPressed: videoController.togglePlay,
                             icon: Icon(
@@ -139,11 +144,20 @@ class _VideoControlsUiState extends State<VideoControlsUi> {
                               color: Colors.white.withValues(alpha: 0.8),
                             ))),
                       ),
+
+                      // 进度条
+                      Expanded(
+                        child:
+                            VideoProgressBar(videoController: videoController),
+                      ),
+
+                      // 全屏按钮
                       AnimatedContainer(
                         duration: Duration(milliseconds: 500),
                         child: IconButton(
                           //使用media_kit_video提供的全屏方法
                           onPressed: () => toggleFullscreen(context),
+                          padding: EdgeInsets.all(0),
                           icon: fullscreen
                               ? Icon(
                                   size: 33,
