@@ -1,14 +1,14 @@
 import 'package:anime_flow/controllers/play/PlayPageController.dart';
 import 'package:anime_flow/models/hot_item.dart';
 import 'package:anime_flow/controllers/video/video_controller.dart'
-    as controller;
-import 'package:flutter/foundation.dart';
+as controller;
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 import 'package:anime_flow/components/video/controls/video_ui_components.dart';
+import 'package:anime_flow/utils/platform.dart';
 
 ///播放器控件
 class VideoControlsUi extends StatefulWidget {
@@ -52,9 +52,9 @@ class _VideoControlsUiState extends State<VideoControlsUi> {
             height: 40,
             decoration: BoxDecoration(
                 gradient: LinearGradient(colors: [
-              Colors.black.withValues(alpha: 0.5),
-              Colors.transparent
-            ], begin: Alignment.topCenter, end: Alignment.bottomCenter)),
+                  Colors.black.withValues(alpha: 0.5),
+                  Colors.transparent
+                ], begin: Alignment.topCenter, end: Alignment.bottomCenter)),
             child: Padding(
               padding: EdgeInsets.all(3),
               child: Row(
@@ -88,38 +88,33 @@ class _VideoControlsUiState extends State<VideoControlsUi> {
                   //右侧
                   Row(
                     children: [
-                      Obx(() => (defaultTargetPlatform ==
-                                      TargetPlatform.linux ||
-                                  defaultTargetPlatform ==
-                                      TargetPlatform.windows ||
-                                  defaultTargetPlatform ==
-                                      TargetPlatform.macOS) &&
-                              playPageController.isWideScreen.value
-                          ? IconButton(
-                              onPressed: () =>
-                                  playPageController.toggleContentExpanded(),
-                              padding: EdgeInsets.all(0),
-                              icon: playPageController.isContentExpanded.value
-                                  ? SvgPicture.asset(
-                                      "lib/assets/icons/right_panel_close.svg",
-                                      width: 30,
-                                      height: 30,
-                                      colorFilter: ColorFilter.mode(
-                                        Colors.white70,
-                                        BlendMode.srcIn,
-                                      ),
-                                    )
-                                  : SvgPicture.asset(
-                                      "lib/assets/icons/left_panel_close.svg",
-                                      width: 30,
-                                      height: 30,
-                                      colorFilter: ColorFilter.mode(
-                                        Colors.white70,
-                                        BlendMode.srcIn,
-                                      ),
-                                    ),
-                            )
-                          : SizedBox.shrink())
+                      if (Platform.isDesktop)
+                        Obx(() => playPageController.isWideScreen.value
+                            ? IconButton(
+                          onPressed: () =>
+                              playPageController.toggleContentExpanded(),
+                          padding: EdgeInsets.all(0),
+                          icon: playPageController.isContentExpanded.value
+                              ? SvgPicture.asset(
+                            "lib/assets/icons/right_panel_close.svg",
+                            width: 30,
+                            height: 30,
+                            colorFilter: ColorFilter.mode(
+                              Colors.white70,
+                              BlendMode.srcIn,
+                            ),
+                          )
+                              : SvgPicture.asset(
+                            "lib/assets/icons/left_panel_close.svg",
+                            width: 30,
+                            height: 30,
+                            colorFilter: ColorFilter.mode(
+                              Colors.white70,
+                              BlendMode.srcIn,
+                            ),
+                          ),
+                        )
+                            : SizedBox.shrink())
                     ],
                   )
                 ],
@@ -204,7 +199,7 @@ class _VideoControlsUiState extends State<VideoControlsUi> {
                       // 进度条
                       Expanded(
                         child:
-                            VideoProgressBar(videoController: videoController),
+                        VideoProgressBar(videoController: videoController),
                       ),
 
                       // 全屏按钮
@@ -216,15 +211,15 @@ class _VideoControlsUiState extends State<VideoControlsUi> {
                           padding: EdgeInsets.all(0),
                           icon: fullscreen
                               ? Icon(
-                                  size: 33,
-                                  Icons.fullscreen_exit,
-                                  color: Colors.white.withValues(alpha: 0.8),
-                                )
+                            size: 33,
+                            Icons.fullscreen_exit,
+                            color: Colors.white.withValues(alpha: 0.8),
+                          )
                               : Icon(
-                                  size: 33,
-                                  Icons.fullscreen,
-                                  color: Colors.white.withValues(alpha: 0.8),
-                                ),
+                            size: 33,
+                            Icons.fullscreen,
+                            color: Colors.white.withValues(alpha: 0.8),
+                          ),
                         ),
                       ),
                     ],
