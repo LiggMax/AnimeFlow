@@ -6,6 +6,8 @@ import 'package:anime_flow/models/subjects_item.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import 'episodes_dialog.dart';
+
 class HeadDetail extends StatelessWidget {
   final Subject subject;
   final SubjectsItem? subjectItem;
@@ -103,7 +105,7 @@ class HeadDetail extends StatelessWidget {
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      //骨架屏
+                      //TODO 添加骨架屏
                       Card(
                         color: Colors.transparent,
                         child: Padding(
@@ -122,9 +124,7 @@ class HeadDetail extends StatelessWidget {
                         children: [
                           IconButton(
                               onPressed: () {
-                                Get.defaultDialog(
-                                  title: "章节"
-                                );
+                                episodesDialog(context, episodesItem);
                               },
                               icon: Icon(
                                 Icons.grid_view_rounded,
@@ -164,4 +164,7 @@ class HeadDetail extends StatelessWidget {
       ],
     );
   }
+
+  ///章节弹窗
+
 }
