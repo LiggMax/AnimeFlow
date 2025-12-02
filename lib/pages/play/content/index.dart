@@ -1,3 +1,4 @@
+import 'package:anime_flow/models/episodes_item.dart';
 import 'package:anime_flow/models/hot_item.dart';
 import 'package:flutter/material.dart';
 
@@ -5,8 +6,9 @@ import 'introduce.dart';
 
 class ContentView extends StatefulWidget {
   final Subject subject;
+  final Future<EpisodesItem> episodes;
 
-  const ContentView(this.subject, {super.key});
+  const ContentView(this.subject, this.episodes, {super.key});
 
   @override
   State<ContentView> createState() => _ContentViewState();
@@ -39,7 +41,8 @@ class _ContentViewState extends State<ContentView>
             child: TabBarView(
               controller: _tabController,
               children: [
-                IntroduceView(widget.subject),
+                //简介view
+                IntroduceView(widget.subject, widget.episodes),
                 Text('评论'),
               ],
             ),

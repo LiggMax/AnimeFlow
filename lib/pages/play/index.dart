@@ -1,5 +1,6 @@
 import 'package:anime_flow/components/video/video.dart';
 import 'package:anime_flow/controllers/play/PlayPageController.dart';
+import 'package:anime_flow/models/episodes_item.dart';
 import 'package:anime_flow/models/hot_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -16,6 +17,7 @@ class PlayPage extends StatefulWidget {
 
 class _PlayPageState extends State<PlayPage> {
   late Subject subject;
+  late Future<EpisodesItem> episodes;
   late PlayPageController playController;
   final GlobalKey _videoKey = GlobalKey();
   final GlobalKey _contentKey = GlobalKey();
@@ -24,7 +26,10 @@ class _PlayPageState extends State<PlayPage> {
   void initState() {
     super.initState();
     playController = Get.put(PlayPageController());
-    subject = Get.arguments as Subject;
+
+    var args = Get.arguments;
+    subject = args['subject'] as Subject;
+    episodes = args['episodes'] as Future<EpisodesItem>;
   }
 
   @override
@@ -60,7 +65,7 @@ class _PlayPageState extends State<PlayPage> {
                     width: playController.isContentExpanded.value ? 300 : 0,
                     child: Opacity(
                       opacity: playController.isContentExpanded.value ? 1 : 0,
-                      child: ContentView(subject, key: _contentKey),
+                      child: ContentView(subject, episodes, key: _contentKey),
                     )))
               ],
             ))
@@ -82,7 +87,7 @@ class _PlayPageState extends State<PlayPage> {
                       child: VideoView(key: _videoKey, subject: subject),
                     ),
                     Expanded(
-                      child: ContentView(subject, key: _contentKey),
+                      child: ContentView(subject,episodes, key: _contentKey),
                     ),
                   ],
                 ),

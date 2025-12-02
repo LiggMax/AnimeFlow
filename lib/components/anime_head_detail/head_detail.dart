@@ -132,7 +132,10 @@ class HeadDetail extends StatelessWidget {
                               )),
                           OutlinedButton.icon(
                             onPressed: () {
-                              Get.toNamed("/play", arguments: subject);
+                              Get.toNamed("/play", arguments: {
+                                "subject": subject,
+                                "episodes": episodesItem
+                              });
                             },
                             style: OutlinedButton.styleFrom(
                               side: BorderSide(color: themeColor),
@@ -166,5 +169,4 @@ class HeadDetail extends StatelessWidget {
   }
 
   ///章节弹窗
-
 }
