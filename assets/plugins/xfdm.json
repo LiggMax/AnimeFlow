@@ -1,0 +1,7 @@
+{
+  "version": "0.0.1",
+  "name": "稀饭动漫",
+  "baseURL": "https://dm1.xfdm.pro",
+  "searchURL": "https://dm1.xfdm.pro/search.html?wd={keyword}",
+  "searchList": ""
+}

@@ -56,6 +56,8 @@ dependencies:
   flutter_launcher_icons: ^0.14.4
   flutter_svg: ^2.2.3
   logger: ^2.6.2
+  xpath_selector: ^3.0.2
+  xpath_selector_html_parser: ^3.0.1
 
 ##logo图标生成
 #生成命令  dart run flutter_launcher_icons
@@ -99,6 +101,7 @@ flutter:
   assets:
     - lib/assets/login_image/
     - lib/assets/icons/
+    - assets/plugins/
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

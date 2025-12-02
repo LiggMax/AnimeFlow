@@ -1,4 +1,5 @@
 import 'package:anime_flow/controllers/play/PlayPageController.dart';
+import 'package:anime_flow/http/requests/web_request.dart';
 import 'package:anime_flow/models/episodes_item.dart';
 import 'package:anime_flow/models/hot_item.dart';
 import 'package:flutter/material.dart';
@@ -24,8 +25,9 @@ class _IntroduceViewState extends State<IntroduceView> {
   void initState() {
     super.initState();
     playPageController = Get.find<PlayPageController>();
+    getSearchSubjectList();
 
-    // 在 initState 中初始化监听器
+    // 初始化监听器
     _screenWorker = ever(playPageController.isWideScreen, (isWide) {
       // 如果有任何弹窗打开（BottomSheet 或 GeneralDialog），则关闭
       if (Get.isBottomSheetOpen == true || Get.isDialogOpen == true) {
@@ -42,6 +44,10 @@ class _IntroduceViewState extends State<IntroduceView> {
         });
       }
     });
+  }
+
+  void getSearchSubjectList() {
+    WebRequest.getSearchSubjectListService(widget.subject.nameCN??widget.subject.name,);
   }
 
   @override
