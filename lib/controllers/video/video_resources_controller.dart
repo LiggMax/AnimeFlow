@@ -3,7 +3,7 @@ import 'package:html/parser.dart';
 import 'package:logger/logger.dart';
 import 'package:xpath_selector_html_parser/xpath_selector_html_parser.dart';
 
-class VideoResourcesController {
+class VideoResourcesController extends GetxController{
   static Logger logger = Logger();
   //解析html搜索页
   static void parseSearchHtml(String searchHtml) async {
