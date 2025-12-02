@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:anime_flow/models/episodes_item.dart';
 import 'package:anime_flow/models/hot_item.dart';
 import 'package:anime_flow/models/subjects_item.dart';
 import 'package:flutter/material.dart';
@@ -8,12 +9,14 @@ import 'package:get/get.dart';
 class HeadDetail extends StatelessWidget {
   final Subject subject;
   final SubjectsItem? subjectItem;
+  final Future<EpisodesItem> episodesItem;
   final double statusBarHeight;
   final double contentHeight;
 
   const HeadDetail(
     this.subject,
-    this.subjectItem, {
+    this.subjectItem,
+    this.episodesItem, {
     super.key,
     required this.statusBarHeight,
     required this.contentHeight,
@@ -106,7 +109,7 @@ class HeadDetail extends StatelessWidget {
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Text(
-                            subjectItem?.airtime?.date ?? '', // 安全访问
+                            subjectItem?.airtime.date ?? '',
                             style: const TextStyle(
                                 fontSize: 12, fontWeight: FontWeight.bold),
                             maxLines: 1,
@@ -117,6 +120,16 @@ class HeadDetail extends StatelessWidget {
                       const Spacer(),
                       Row(
                         children: [
+                          IconButton(
+                              onPressed: () {
+                                Get.defaultDialog(
+                                  title: "章节"
+                                );
+                              },
+                              icon: Icon(
+                                Icons.grid_view_rounded,
+                                size: 28,
+                              )),
                           OutlinedButton.icon(
                             onPressed: () {
                               Get.toNamed("/play", arguments: subject);

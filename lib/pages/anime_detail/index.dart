@@ -1,5 +1,6 @@
 import 'package:anime_flow/components/anime_head_detail/head_detail.dart';
 import 'package:anime_flow/http/requests/bgm_request.dart';
+import 'package:anime_flow/models/episodes_item.dart';
 import 'package:anime_flow/models/hot_item.dart';
 import 'package:anime_flow/models/subjects_item.dart';
 import 'package:flutter/material.dart';
@@ -17,10 +18,11 @@ class _AnimeDetailPageState extends State<AnimeDetailPage>
   late Subject animeDetail;
   late TabController _tabController;
   late Future<SubjectsItem?> _subjectsItem;
-  final List<String> _tabs = ['Tab A', 'Tab B', 'Tab C'];
+  late Future<EpisodesItem> episodesFuture;
+
+  final List<String> _tabs = ['章节', '简介', '评论'];
   final double _contentHeight = 200.0; // 内容区域的高度
   bool _isPinned = false;
-
 
   @override
   void initState() {
@@ -28,8 +30,9 @@ class _AnimeDetailPageState extends State<AnimeDetailPage>
     _tabController = TabController(length: _tabs.length, vsync: this);
     animeDetail = Get.arguments;
     _subjectsItem = BgmRequest.getSubjectByIdService(animeDetail.id);
+    episodesFuture =
+        BgmRequest.getSubjectEpisodesByIdService(animeDetail.id, 100, 0);
   }
-  
 
   @override
   void dispose() {
@@ -95,7 +98,7 @@ class _AnimeDetailPageState extends State<AnimeDetailPage>
                       kToolbarHeight +
                       tabBarHeight,
 
-                  /// 头部内容区域
+                  /// t头部内容区域
                   flexibleSpace: FlexibleSpaceBar(
                     collapseMode: CollapseMode.pin,
                     background: Container(
@@ -109,6 +112,7 @@ class _AnimeDetailPageState extends State<AnimeDetailPage>
                           return HeadDetail(
                             animeDetail,
                             snapshot.data,
+                            episodesFuture,
                             statusBarHeight: statusBarHeight,
                             contentHeight: _contentHeight,
                           );

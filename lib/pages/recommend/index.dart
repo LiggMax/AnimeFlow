@@ -45,29 +45,20 @@ class _RecommendViewState extends State<RecommendView> {
       _isLoading = true;
     });
 
-    try {
-      final hotItem = await BgmRequest.getHotService(_limit, _offset);
+    final hotItem = await BgmRequest.getHotService(_limit, _offset);
 
-      if (mounted) {
-        setState(() {
-          _dataList.addAll(hotItem.data);
-          _offset += hotItem.data.length;
-          if (hotItem.data.length < _limit) {
-            _hasMore = false;
-          }
-          _isLoading = false;
-        });
-      }
-    } catch (e) {
-      print('加载失败: $e');
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
+    if (mounted) {
+      setState(() {
+        _dataList.addAll(hotItem.data);
+        _offset += hotItem.data.length;
+        if (hotItem.data.length < _limit) {
+          _hasMore = false;
+        }
+        _isLoading = false;
+      });
     }
   }
-  
+
   Widget _buildPage() {
     if (_dataList.isEmpty && _isLoading) {
       return const Center(child: CircularProgressIndicator());
@@ -92,7 +83,8 @@ class _RecommendViewState extends State<RecommendView> {
                 if (index == _dataList.length) {
                   return _hasMore
                       ? const Center(child: CircularProgressIndicator())
-                      : const Center(child: Padding(
+                      : const Center(
+                          child: Padding(
                           padding: EdgeInsets.all(8.0),
                           child: Text("没有更多了"),
                         ));
@@ -189,7 +181,9 @@ class _RecommendViewState extends State<RecommendView> {
               builder: (controller) {
                 return IconButton(
                   icon: Icon(
-                    controller.isDarkMode ? Icons.brightness_7 : Icons.brightness_4,
+                    controller.isDarkMode
+                        ? Icons.brightness_7
+                        : Icons.brightness_4,
                     color: controller.isDarkMode ? Colors.white : Colors.black,
                   ),
                   onPressed: () {
