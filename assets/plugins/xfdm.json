@@ -3,5 +3,7 @@
   "name": "稀饭动漫",
   "baseURL": "https://dm1.xfdm.pro",
   "searchURL": "https://dm1.xfdm.pro/search.html?wd={keyword}",
-  "searchList": ""
+  "searchList": "//div[@class='public-list-box search-box flex rel']",
+  "searchName": "//div[@class='thumb-txt cor4 hide']",
+  "searchLink": "//a[@class='public-list-exp']"
 }

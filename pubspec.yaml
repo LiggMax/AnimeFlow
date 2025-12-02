@@ -58,6 +58,7 @@ dependencies:
   logger: ^2.6.2
   xpath_selector: ^3.0.2
   xpath_selector_html_parser: ^3.0.1
+  html: ^0.15.6
 
 ##logo图标生成
 #生成命令  dart run flutter_launcher_icons
