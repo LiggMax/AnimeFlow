@@ -1,7 +1,9 @@
+import 'package:anime_flow/controllers/play/PlayPageController.dart';
 import 'package:anime_flow/models/episodes_item.dart';
 import 'package:anime_flow/models/hot_item.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:logger/logger.dart';
 
 class IntroduceView extends StatelessWidget {
   final Subject subject;
@@ -11,6 +13,27 @@ class IntroduceView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final PlayPageController playPageController =
+        Get.find<PlayPageController>();
+
+    // 监听宽屏状态变化，动态处理弹窗
+    ever(playPageController.isWideScreen, (isWide) {
+      // 如果有任何弹窗打开（BottomSheet 或 GeneralDialog），则关闭
+      if (Get.isBottomSheetOpen == true || Get.isDialogOpen == true) {
+        Get.back();
+        // 延迟一点时间重新打开对应样式的弹窗
+        Future.delayed(const Duration(milliseconds: 100), () {
+          if (context.mounted) {
+            if (isWide) {
+              _showSideDrawer(context);
+            } else {
+              _showBottomSheet(context);
+            }
+          }
+        });
+      }
+    });
+
     return Padding(
         padding: EdgeInsets.all(10),
         child: SingleChildScrollView(
@@ -32,12 +55,13 @@ class IntroduceView extends StatelessWidget {
                       Text("选集"),
                       IconButton(
                         onPressed: () {
-                          Get.bottomSheet(
-                            _episodesDrawer(context),
-                            ignoreSafeArea: true,
-                            isScrollControlled: true, // 允许控制高度和滚动
-                            backgroundColor: Colors.transparent,
-                          );
+                          if (playPageController.isWideScreen.value) {
+                            // 宽屏展示侧边抽屉
+                            _showSideDrawer(context);
+                          } else {
+                            // 窄屏展示底部抽屉
+                            _showBottomSheet(context);
+                          }
                         },
                         icon: Icon(Icons.more_horiz_rounded),
                       )
@@ -52,94 +76,170 @@ class IntroduceView extends StatelessWidget {
         ));
   }
 
-  //剧集抽屉
-  Widget _episodesDrawer(BuildContext context) {
-    return Container(
-      height: MediaQuery.of(context).size.height * 0.75, // 增加高度
-      padding: EdgeInsets.all(10),
-      decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(15)),
-      ),
-      child: Column(
-        children: [
-          // 顶部指示条，提示可以拖拽
-          Container(
-            width: 40,
-            height: 5,
-            margin: EdgeInsets.only(bottom: 10),
-            decoration: BoxDecoration(
-              color: Colors.grey.withValues(alpha: 0.3),
-              borderRadius: BorderRadius.circular(2.5),
-            ),
+  /// 底部抽屉
+  void _showBottomSheet(BuildContext context) {
+    Get.bottomSheet(
+        ignoreSafeArea: true,
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        Container(
+          height: MediaQuery.of(context).size.height * 0.75,
+          padding: EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            color: Theme.of(context).cardColor,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(15)),
           ),
-          Expanded(
-            child: FutureBuilder<EpisodesItem>(
-              future: episodes,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                } else if (snapshot.hasError) {
-                  return Center(child: Text('加载失败'));
-                } else if (snapshot.hasData) {
-                  final episodeList = snapshot.data!.data;
-                  return LayoutBuilder(builder: (context, constraints) {
-                    // 使用 Wrap 实现自适应高度的网格布局
-                    final double spacing = 8.0;
-                    // 计算每个卡片的宽度（减去中间间距）
-                    final double itemWidth =
-                        (constraints.maxWidth - spacing) / 2;
+          child: Column(
+            children: [
+              // 顶部指示条
+              Container(
+                width: 40,
+                height: 5,
+                margin: EdgeInsets.only(bottom: 10),
+                decoration: BoxDecoration(
+                  color: Colors.grey.withValues(alpha: 0.3),
+                  borderRadius: BorderRadius.circular(2.5),
+                ),
+              ),
+              Expanded(child: _buildEpisodesGrid()),
+            ],
+          ),
+        ));
+  }
 
-                    return SingleChildScrollView(
-                      physics: AlwaysScrollableScrollPhysics(), // 确保总是可以滚动
-                      child: Wrap(
-                        spacing: spacing,
-                        runSpacing: spacing,
-                        children: episodeList.map((episode) {
-                          return SizedBox(
-                            width: itemWidth,
-                            child: Card(
-                              margin: EdgeInsets.zero,
-                              child: Padding(
-                                padding: EdgeInsets.all(12),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      '第${episode.sort}话',
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                    SizedBox(height: 6),
-                                    Text(
-                                      episode.nameCN.isNotEmpty
-                                          ? episode.nameCN
-                                          : episode.name,
-                                      style: TextStyle(
-                                          fontSize: 12, color: Colors.grey),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          );
-                        }).toList(),
-                      ),
-                    );
-                  });
-                } else {
-                  return const Center(child: Text('暂无章节数据'));
-                }
-              },
+  /// 侧边抽屉
+  void _showSideDrawer(BuildContext context) {
+    Get.generalDialog(
+      barrierDismissible: true,
+      barrierLabel: "EpisodesDrawer",
+      barrierColor: Colors.black54,
+      transitionDuration: const Duration(milliseconds: 300),
+      pageBuilder: (context, animation, secondaryAnimation) {
+        return Align(
+          alignment: Alignment.centerRight,
+          child: Container(
+            width: 350,
+            height: double.infinity,
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Theme.of(context).cardColor,
+              borderRadius:
+                  const BorderRadius.horizontal(left: Radius.circular(16)),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      "章节列表",
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                    IconButton(
+                      onPressed: () => Get.back(),
+                      icon: const Icon(Icons.close),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                Expanded(child: _buildEpisodesGrid()),
+              ],
             ),
           ),
-        ],
-      ),
+        );
+      },
+      transitionBuilder: (context, animation, secondaryAnimation, child) {
+        return SlideTransition(
+          position: Tween<Offset>(
+            begin: const Offset(1, 0),
+            end: Offset.zero,
+          ).animate(CurvedAnimation(
+            parent: animation,
+            curve: Curves.easeOut,
+          )),
+          child: child,
+        );
+      },
+    );
+  }
+
+  /// 通用章节网格
+  Widget _buildEpisodesGrid() {
+    final Logger logger = Logger();
+    return FutureBuilder<EpisodesItem>(
+      future: episodes,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasData) {
+          final episodeList = snapshot.data!.data;
+          if (episodeList.isEmpty) {
+            return const Center(child: Text('暂无章节数据'));
+          }
+          return LayoutBuilder(builder: (context, constraints) {
+            final double spacing = 8.0;
+            // 动态计算列数，最小2列，最大6列
+            final int crossAxisCount =
+                (constraints.maxWidth / 160).floor().clamp(2, 6);
+            final double itemWidth =
+                (constraints.maxWidth - (crossAxisCount - 1) * spacing) /
+                    crossAxisCount;
+
+            return SingleChildScrollView(
+              physics: AlwaysScrollableScrollPhysics(),
+              child: Wrap(
+                spacing: spacing,
+                runSpacing: spacing,
+                children: episodeList.map((episode) {
+                  return SizedBox(
+                    width: itemWidth,
+                    child: Card(
+                      margin: EdgeInsets.zero,
+                      child: InkWell(
+                        onTap: () {
+                          logger.i('第${episode.sort}话');
+                          //TODO 实现播放
+                        },
+                        borderRadius: BorderRadius.circular(12), // 匹配Card圆角
+                        child: Padding(
+                          padding: EdgeInsets.all(12),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                '第${episode.sort}话',
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                              SizedBox(height: 6),
+                              Text(
+                                episode.nameCN.isNotEmpty
+                                    ? episode.nameCN
+                                    : episode.name,
+                                style:
+                                    TextStyle(fontSize: 12, color: Colors.grey),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                }).toList(),
+              ),
+            );
+          });
+        } else {
+          return const Center(child: Text('加载失败'));
+        }
+      },
     );
   }
 
   //横向滚动卡片
   FutureBuilder<EpisodesItem> _scrollTheCardHorizontally() {
+    final Logger logger = Logger();
     return FutureBuilder<EpisodesItem>(
       future: episodes,
       builder: (context, snapshot) {
@@ -147,6 +247,9 @@ class IntroduceView extends StatelessWidget {
           return const CircularProgressIndicator();
         } else if (snapshot.hasData) {
           final episodeList = snapshot.data!.data;
+          if (episodeList.isEmpty) {
+            return const Text('暂无章节数据');
+          }
           return SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: Row(
@@ -155,23 +258,28 @@ class IntroduceView extends StatelessWidget {
                 (index) {
                   final episode = episodeList[index];
                   return Card(
-                    child: Container(
-                      width: 100,
-                      padding: EdgeInsets.all(8),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text('第${episode.sort}话'),
-                          SizedBox(height: 5),
-                          Text(
-                            episode.nameCN.isNotEmpty
-                                ? episode.nameCN
-                                : episode.name,
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
-                          ),
-                        ],
+                    child: InkWell(
+                      onTap: () {
+                        logger.i('第${episode.sort}话');
+                      },
+                      child: Container(
+                        width: 150,
+                        padding: EdgeInsets.all(8),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text('第${episode.sort}话'),
+                            SizedBox(height: 5),
+                            Text(
+                              episode.nameCN.isNotEmpty
+                                  ? episode.nameCN
+                                  : episode.name,
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   );
