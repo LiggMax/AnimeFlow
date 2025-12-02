@@ -5,34 +5,55 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:logger/logger.dart';
 
-class IntroduceView extends StatelessWidget {
+class IntroduceView extends StatefulWidget {
   final Subject subject;
   final Future<EpisodesItem> episodes;
 
   const IntroduceView(this.subject, this.episodes, {super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final PlayPageController playPageController =
-        Get.find<PlayPageController>();
+  State<IntroduceView> createState() => _IntroduceViewState();
+}
 
-    // 监听宽屏状态变化，动态处理弹窗
-    ever(playPageController.isWideScreen, (isWide) {
+class _IntroduceViewState extends State<IntroduceView> {
+  late PlayPageController playPageController;
+  Worker? _screenWorker;
+
+  @override
+  void initState() {
+    super.initState();
+    playPageController = Get.find<PlayPageController>();
+
+    // 在 initState 中初始化监听器
+    const String drawerTitle = "章节列表";
+    _screenWorker = ever(playPageController.isWideScreen, (isWide) {
       // 如果有任何弹窗打开（BottomSheet 或 GeneralDialog），则关闭
       if (Get.isBottomSheetOpen == true || Get.isDialogOpen == true) {
         Get.back();
         // 延迟一点时间重新打开对应样式的弹窗
         Future.delayed(const Duration(milliseconds: 100), () {
-          if (context.mounted) {
+          if (mounted) {
             if (isWide) {
-              _showSideDrawer(context);
+              _showSideDrawer(context, title: drawerTitle);
             } else {
-              _showBottomSheet(context);
+              _showBottomSheet(context, title: drawerTitle);
             }
           }
         });
       }
     });
+  }
+
+  @override
+  void dispose() {
+    // 清理监听器，避免内存泄漏
+    _screenWorker?.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    const String drawerTitle = "章节列表";
 
     return Padding(
         padding: EdgeInsets.all(10),
@@ -41,7 +62,7 @@ class IntroduceView extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                subject.nameCN ?? subject.name,
+                widget.subject.nameCN ?? widget.subject.name,
                 style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
                 textAlign: TextAlign.left,
               ),
@@ -57,10 +78,10 @@ class IntroduceView extends StatelessWidget {
                         onPressed: () {
                           if (playPageController.isWideScreen.value) {
                             // 宽屏展示侧边抽屉
-                            _showSideDrawer(context);
+                            _showSideDrawer(context, title: drawerTitle);
                           } else {
                             // 窄屏展示底部抽屉
-                            _showBottomSheet(context);
+                            _showBottomSheet(context, title: drawerTitle);
                           }
                         },
                         icon: Icon(Icons.more_horiz_rounded),
@@ -77,7 +98,7 @@ class IntroduceView extends StatelessWidget {
   }
 
   /// 底部抽屉
-  void _showBottomSheet(BuildContext context) {
+  void _showBottomSheet(BuildContext context, {String? title}) {
     Get.bottomSheet(
         ignoreSafeArea: true,
         isScrollControlled: true,
@@ -95,10 +116,24 @@ class IntroduceView extends StatelessWidget {
               Container(
                 width: 40,
                 height: 5,
-                margin: EdgeInsets.only(bottom: 10),
+                margin: const EdgeInsets.only(bottom: 10),
                 decoration: BoxDecoration(
                   color: Colors.grey.withValues(alpha: 0.3),
                   borderRadius: BorderRadius.circular(2.5),
+                ),
+              ),
+              Container(
+                padding: EdgeInsets.only(bottom: 10),
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  title ?? '',
+                  textAlign: TextAlign.left,
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).textTheme.titleLarge?.color,
+                    decoration: TextDecoration.none,
+                  ),
                 ),
               ),
               Expanded(child: _buildEpisodesGrid()),
@@ -108,7 +143,7 @@ class IntroduceView extends StatelessWidget {
   }
 
   /// 侧边抽屉
-  void _showSideDrawer(BuildContext context) {
+  void _showSideDrawer(BuildContext context, {String? title}) {
     Get.generalDialog(
       barrierDismissible: true,
       barrierLabel: "EpisodesDrawer",
@@ -124,7 +159,7 @@ class IntroduceView extends StatelessWidget {
             decoration: BoxDecoration(
               color: Theme.of(context).cardColor,
               borderRadius:
-                  const BorderRadius.horizontal(left: Radius.circular(16)),
+              const BorderRadius.horizontal(left: Radius.circular(16)),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -132,14 +167,17 @@ class IntroduceView extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
-                      "章节列表",
-                      style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    Text(
+                      title ?? '',
+                      style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).textTheme.titleLarge?.color,
+                          decoration: TextDecoration.none),
                     ),
                     IconButton(
                       onPressed: () => Get.back(),
-                      icon: const Icon(Icons.close),
+                      icon: const Icon(Icons.close_rounded),
                     ),
                   ],
                 ),
@@ -169,7 +207,7 @@ class IntroduceView extends StatelessWidget {
   Widget _buildEpisodesGrid() {
     final Logger logger = Logger();
     return FutureBuilder<EpisodesItem>(
-      future: episodes,
+      future: widget.episodes,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
@@ -182,7 +220,7 @@ class IntroduceView extends StatelessWidget {
             final double spacing = 8.0;
             // 动态计算列数，最小2列，最大6列
             final int crossAxisCount =
-                (constraints.maxWidth / 160).floor().clamp(2, 6);
+            (constraints.maxWidth / 160).floor().clamp(2, 6);
             final double itemWidth =
                 (constraints.maxWidth - (crossAxisCount - 1) * spacing) /
                     crossAxisCount;
@@ -218,7 +256,7 @@ class IntroduceView extends StatelessWidget {
                                     ? episode.nameCN
                                     : episode.name,
                                 style:
-                                    TextStyle(fontSize: 12, color: Colors.grey),
+                                TextStyle(fontSize: 12, color: Colors.grey),
                               ),
                             ],
                           ),
@@ -241,7 +279,7 @@ class IntroduceView extends StatelessWidget {
   FutureBuilder<EpisodesItem> _scrollTheCardHorizontally() {
     final Logger logger = Logger();
     return FutureBuilder<EpisodesItem>(
-      future: episodes,
+      future: widget.episodes,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const CircularProgressIndicator();
@@ -255,7 +293,7 @@ class IntroduceView extends StatelessWidget {
             child: Row(
               children: List.generate(
                 episodeList.length,
-                (index) {
+                    (index) {
                   final episode = episodeList[index];
                   return Card(
                     child: InkWell(
@@ -294,3 +332,4 @@ class IntroduceView extends StatelessWidget {
     );
   }
 }
+
