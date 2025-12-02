@@ -8,6 +8,7 @@ import 'package:logger/logger.dart';
 class IntroduceView extends StatefulWidget {
   final Subject subject;
   final Future<EpisodesItem> episodes;
+  static const String drawerTitle = "章节列表";
 
   const IntroduceView(this.subject, this.episodes, {super.key});
 
@@ -25,7 +26,6 @@ class _IntroduceViewState extends State<IntroduceView> {
     playPageController = Get.find<PlayPageController>();
 
     // 在 initState 中初始化监听器
-    const String drawerTitle = "章节列表";
     _screenWorker = ever(playPageController.isWideScreen, (isWide) {
       // 如果有任何弹窗打开（BottomSheet 或 GeneralDialog），则关闭
       if (Get.isBottomSheetOpen == true || Get.isDialogOpen == true) {
@@ -34,9 +34,9 @@ class _IntroduceViewState extends State<IntroduceView> {
         Future.delayed(const Duration(milliseconds: 100), () {
           if (mounted) {
             if (isWide) {
-              _showSideDrawer(context, title: drawerTitle);
+              _showSideDrawer(context, title: IntroduceView.drawerTitle);
             } else {
-              _showBottomSheet(context, title: drawerTitle);
+              _showBottomSheet(context, title: IntroduceView.drawerTitle);
             }
           }
         });
@@ -53,7 +53,6 @@ class _IntroduceViewState extends State<IntroduceView> {
 
   @override
   Widget build(BuildContext context) {
-    const String drawerTitle = "章节列表";
 
     return Padding(
         padding: EdgeInsets.all(10),
@@ -78,10 +77,10 @@ class _IntroduceViewState extends State<IntroduceView> {
                         onPressed: () {
                           if (playPageController.isWideScreen.value) {
                             // 宽屏展示侧边抽屉
-                            _showSideDrawer(context, title: drawerTitle);
+                            _showSideDrawer(context, title: IntroduceView.drawerTitle);
                           } else {
                             // 窄屏展示底部抽屉
-                            _showBottomSheet(context, title: drawerTitle);
+                            _showBottomSheet(context, title: IntroduceView.drawerTitle);
                           }
                         },
                         icon: Icon(Icons.more_horiz_rounded),
