@@ -45,18 +45,19 @@ class _VideoControlsUiState extends State<VideoControlsUi> {
     return Stack(fit: StackFit.expand, children: [
       ///顶部
       Positioned(
-          top: 0,
+        //避开安全区
+          top: -3,
           left: 0,
           right: 0,
           child: Container(
-            height: 40,
+            margin: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
             decoration: BoxDecoration(
                 gradient: LinearGradient(colors: [
-                  Colors.black.withValues(alpha: 0.5),
+                  Colors.black45,
                   Colors.transparent
                 ], begin: Alignment.topCenter, end: Alignment.bottomCenter)),
             child: Padding(
-              padding: EdgeInsets.all(3),
+              padding: EdgeInsets.symmetric(horizontal: 3),
               child: Row(
                 ///两侧对齐
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -123,7 +124,6 @@ class _VideoControlsUiState extends State<VideoControlsUi> {
           )),
 
       ///中间
-
       Positioned(
           top: 40,
           left: 0,
@@ -143,10 +143,9 @@ class _VideoControlsUiState extends State<VideoControlsUi> {
           left: 0,
           right: 0,
           child: Container(
-            height: 80,
             decoration: BoxDecoration(
               gradient: LinearGradient(colors: [
-                Colors.black.withValues(alpha: 0.5),
+                Colors.black45,
                 Colors.transparent,
               ], begin: Alignment.bottomCenter, end: Alignment.topCenter),
             ),
