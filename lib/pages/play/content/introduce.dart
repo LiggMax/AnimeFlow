@@ -1,3 +1,4 @@
+import 'package:anime_flow/constants/play_layout_constant.dart';
 import 'package:anime_flow/controllers/play/PlayPageController.dart';
 import 'package:anime_flow/http/requests/web_request.dart';
 import 'package:anime_flow/models/episodes_item.dart';
@@ -19,7 +20,7 @@ class IntroduceView extends StatefulWidget {
 
 class _IntroduceViewState extends State<IntroduceView> {
   late PlayPageController playPageController;
-  Worker? _screenWorker;
+  Worker? _screenWorker; // 屏幕宽高监听器
 
   @override
   void initState() {
@@ -47,19 +48,20 @@ class _IntroduceViewState extends State<IntroduceView> {
   }
 
   void getSearchSubjectList() {
-    WebRequest.getSearchSubjectListService(widget.subject.nameCN??widget.subject.name,);
+    WebRequest.getSearchSubjectListService(
+      widget.subject.nameCN ?? widget.subject.name,
+    );
   }
 
   @override
   void dispose() {
-    // 清理监听器，避免内存泄漏
+    // 清理监听器
     _screenWorker?.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-
     return Padding(
         padding: EdgeInsets.all(10),
         child: SingleChildScrollView(
@@ -83,10 +85,12 @@ class _IntroduceViewState extends State<IntroduceView> {
                         onPressed: () {
                           if (playPageController.isWideScreen.value) {
                             // 宽屏展示侧边抽屉
-                            _showSideDrawer(context, title: IntroduceView.drawerTitle);
+                            _showSideDrawer(context,
+                                title: IntroduceView.drawerTitle);
                           } else {
                             // 窄屏展示底部抽屉
-                            _showBottomSheet(context, title: IntroduceView.drawerTitle);
+                            _showBottomSheet(context,
+                                title: IntroduceView.drawerTitle);
                           }
                         },
                         icon: Icon(Icons.more_horiz_rounded),
@@ -109,6 +113,7 @@ class _IntroduceViewState extends State<IntroduceView> {
         isScrollControlled: true,
         backgroundColor: Colors.transparent,
         Container(
+          //TODO 获取竖屏播放器高度状态，动态设置底部抽屉弹出占满剩余高度
           height: MediaQuery.of(context).size.height * 0.75,
           padding: EdgeInsets.all(10),
           decoration: BoxDecoration(
@@ -141,7 +146,10 @@ class _IntroduceViewState extends State<IntroduceView> {
                   ),
                 ),
               ),
-              Expanded(child: _buildEpisodesGrid()),
+              Expanded(
+                child: Align(
+                    alignment: Alignment.topLeft, child: _buildEpisodesGrid()),
+              )
             ],
           ),
         ));
@@ -158,14 +166,10 @@ class _IntroduceViewState extends State<IntroduceView> {
         return Align(
           alignment: Alignment.centerRight,
           child: Container(
-            width: 350,
+            width: PlayLayoutConstant.playContentWidth,
             height: double.infinity,
             padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Theme.of(context).cardColor,
-              borderRadius:
-              const BorderRadius.horizontal(left: Radius.circular(16)),
-            ),
+            color: Theme.of(context).cardColor,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -225,7 +229,7 @@ class _IntroduceViewState extends State<IntroduceView> {
             final double spacing = 8.0;
             // 动态计算列数，最小2列，最大6列
             final int crossAxisCount =
-            (constraints.maxWidth / 160).floor().clamp(2, 6);
+                (constraints.maxWidth / 160).floor().clamp(2, 6);
             final double itemWidth =
                 (constraints.maxWidth - (crossAxisCount - 1) * spacing) /
                     crossAxisCount;
@@ -261,7 +265,7 @@ class _IntroduceViewState extends State<IntroduceView> {
                                     ? episode.nameCN
                                     : episode.name,
                                 style:
-                                TextStyle(fontSize: 12, color: Colors.grey),
+                                    TextStyle(fontSize: 12, color: Colors.grey),
                               ),
                             ],
                           ),
@@ -298,7 +302,7 @@ class _IntroduceViewState extends State<IntroduceView> {
             child: Row(
               children: List.generate(
                 episodeList.length,
-                    (index) {
+                (index) {
                   final episode = episodeList[index];
                   return Card(
                     child: InkWell(
@@ -337,4 +341,3 @@ class _IntroduceViewState extends State<IntroduceView> {
     );
   }
 }
-

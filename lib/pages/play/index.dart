@@ -1,4 +1,5 @@
 import 'package:anime_flow/components/video/video.dart';
+import 'package:anime_flow/constants/play_layout_constant.dart';
 import 'package:anime_flow/controllers/play/PlayPageController.dart';
 import 'package:anime_flow/models/episodes_item.dart';
 import 'package:anime_flow/models/hot_item.dart';
@@ -62,7 +63,9 @@ class _PlayPageState extends State<PlayPage> {
                 ),
                 Obx(() => AnimatedContainer(
                     duration: Duration(milliseconds: 100),
-                    width: playController.isContentExpanded.value ? 300 : 0,
+                    width: playController.isContentExpanded.value
+                        ? PlayLayoutConstant.playContentWidth
+                        : 0,
                     child: Opacity(
                       opacity: playController.isContentExpanded.value ? 1 : 0,
                       child: ContentView(subject, episodes, key: _contentKey),
@@ -87,7 +90,7 @@ class _PlayPageState extends State<PlayPage> {
                       child: VideoView(key: _videoKey, subject: subject),
                     ),
                     Expanded(
-                      child: ContentView(subject,episodes, key: _contentKey),
+                      child: ContentView(subject, episodes, key: _contentKey),
                     ),
                   ],
                 ),

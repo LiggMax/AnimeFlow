@@ -24,9 +24,11 @@ class VideoProgressBar extends StatelessWidget {
             SliderTheme(
               data: SliderThemeData(
                 trackHeight: 6,
-                thumbShape: SliderComponentShape.noThumb, // 隐藏滑块
+                thumbShape: SliderComponentShape.noThumb,
+                // 隐藏滑块
                 overlayShape: SliderComponentShape.noOverlay,
-                activeTrackColor: Colors.white.withValues(alpha: 0.4), // 缓冲颜色
+                activeTrackColor: Colors.white.withValues(alpha: 0.4),
+                // 缓冲颜色
                 disabledActiveTrackColor: Colors.white.withValues(alpha: 0.4),
                 disabledThumbColor: Colors.transparent,
                 // 移除缓冲条默认的Padding，使其与带滑块的进度条对齐
@@ -46,7 +48,8 @@ class VideoProgressBar extends StatelessWidget {
                 thumbShape: RoundSliderThumbShape(enabledThumbRadius: 8),
                 overlayShape: RoundSliderOverlayShape(overlayRadius: 16),
                 activeTrackColor: Theme.of(context).colorScheme.primary,
-                inactiveTrackColor: Colors.transparent, // 透明背景，露出缓冲条
+                inactiveTrackColor: Colors.transparent,
+                // 透明背景，露出缓冲条
                 thumbColor: Theme.of(context).colorScheme.primary,
               ),
               child: Slider(
@@ -127,6 +130,7 @@ class VideoTimeDisplay extends StatelessWidget {
 /// 播放状态图标组件
 class PlayStatusIcon extends StatelessWidget {
   final VideoController videoController;
+
   const PlayStatusIcon(this.videoController, {super.key});
 
   @override
@@ -142,10 +146,10 @@ class PlayStatusIcon extends StatelessWidget {
           ),
           child: Icon(
             videoController.isPlaying
-                ? Icons.play_arrow_rounded
-                : Icons.pause_rounded,
+                ? Icons.pause_rounded
+                : Icons.play_arrow_rounded,
             size: 33,
-            color: Colors.white.withValues(alpha: 0.8),
+            color: Colors.white54,
           ),
         );
       } else {
@@ -154,4 +158,3 @@ class PlayStatusIcon extends StatelessWidget {
     });
   }
 }
-
