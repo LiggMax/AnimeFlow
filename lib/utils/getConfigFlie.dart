@@ -9,7 +9,7 @@ class GetConfigFile {
   static Future<Map<String, dynamic>> loadPluginConfig() async {
     try {
       final String jsonString =
-          await rootBundle.loadString('assets/plugins/xfdm.json');
+          await rootBundle.loadString('assets/plugins/girigiri.json');
 
       final Map<String, dynamic> config = json.decode(jsonString);
 

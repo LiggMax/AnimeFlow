@@ -1,4 +1,4 @@
-import 'package:anime_flow/models/void/episode_resources.dart';
+import 'package:anime_flow/models/void/episode_resources_item.dart';
 import 'package:anime_flow/models/void/search_resources_item.dart';
 import 'package:anime_flow/utils/getConfigFlie.dart';
 import 'package:get/get.dart';
@@ -9,7 +9,7 @@ import 'package:xpath_selector_html_parser/xpath_selector_html_parser.dart';
 class VideoResourcesController extends GetxController {
   static Logger logger = Logger();
 
-  //解析html搜索页
+  ///解析html搜索页
   static Future<List<SearchResourcesItem>> parseSearchHtml(
       String searchHtml) async {
     final config = await GetConfigFile.loadPluginConfig();
@@ -36,18 +36,19 @@ class VideoResourcesController extends GetxController {
   }
 
   ///解析html资源页面
-  static Future<List<EpisodeResources>> parseResourcesHtml(
+  static Future<List<EpisodeResourcesItem>> parseResourcesHtml(
       String resourcesHtml) async {
     final config = await GetConfigFile.loadPluginConfig();
     final String lineNames = config['lineNames'];
     final String lineList = config['lineList'];
     final String episode = config['episode'];
+    final String matchEpisodeSort = config['matchEpisodeSort'];
 
     final parser = parse(resourcesHtml).documentElement!;
     final lineNamesElement = parser.queryXPath(lineNames);
     final lineListElement = parser.queryXPath(lineList);
 
-    List<EpisodeResources> episodeResourcesList = [];
+    List<EpisodeResourcesItem> episodeResourcesList = [];
 
     // 根据lineListElement长度循环（每个线路）
     for (int i = 0; i < lineListElement.nodes.length; i++) {
@@ -61,16 +62,25 @@ class VideoResourcesController extends GetxController {
       final currentLineElement = lineListElement.nodes[i];
       final currentEpisodesElement = currentLineElement.queryXPath(episode);
 
-      // 提取当前线路的所有剧集名称
-      List<String> episodeNames = [];
+      // 提取当前线路的所有剧集
+      List<Episode> episodes = [];
       for (var episodeNode in currentEpisodesElement.nodes) {
-        episodeNames.add(episodeNode.text?.trim() ?? '');
+        String episodeName = episodeNode.text?.trim() ?? '';
+        RegExp numberRegex = RegExp(r'\d+');
+        RegExpMatch? match = numberRegex.firstMatch(episodeName);
+        String? episodeNumberStr = match!.group(0);
+
+        Episode episodeObj = Episode(
+          episodeSort: episodeNumberStr!,
+          like: episodeNode.attributes['href'] ?? '',
+        );
+        episodes.add(episodeObj);
       }
 
       // 创建EpisodeResources对象
-      EpisodeResources episodeResource = EpisodeResources(
+      EpisodeResourcesItem episodeResource = EpisodeResourcesItem(
         lineNames: lineName,
-        episodeNames: episodeNames,
+        episodes: episodes,
       );
 
       episodeResourcesList.add(episodeResource);
@@ -78,5 +88,17 @@ class VideoResourcesController extends GetxController {
 
     logger.i("线路资源:${episodeResourcesList.toString()}");
     return episodeResourcesList;
+  }
+
+  ///解析html视频源
+  static Future<String> parseVideoUrl(String playHtml) async {
+    final config = await GetConfigFile.loadPluginConfig();
+    final String matchVideoUrl = config['matchVideoUrl'];
+
+    final RegExp regex = RegExp(r'https://[^\s]+(\.mp4|\.mkv|\.m3u8)');
+
+    final Match? match = regex.firstMatch(playHtml);
+    logger.i(match);
+    return "";
   }
 }
