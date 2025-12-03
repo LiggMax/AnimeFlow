@@ -22,7 +22,7 @@ class _VideoViewState extends State<VideoView> {
     super.initState();
     player.open(
       Media(
-        'https://love.girigirilove.net/zijian/anime/2024/07/0708/JujutsuKaisen0/playlist.m3u8',
+        'https://m3u8.girigirilove.com/addons/aplyer/atom.php?key=0&amp;url=https://ai.girigirilove.net/zijian/oldanime/2025/10/cht/SPYxFAMILYS3CHT/38/playlist.m3u8',
       ),
     );
   }
