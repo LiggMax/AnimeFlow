@@ -1,6 +1,6 @@
 import 'package:anime_flow/constants/play_layout_constant.dart';
 import 'package:anime_flow/controllers/play/PlayPageController.dart';
-import 'package:anime_flow/http/requests/web_request.dart';
+import 'package:anime_flow/data/crawler/html_request.dart';
 import 'package:anime_flow/models/episodes_item.dart';
 import 'package:anime_flow/models/hot_item.dart';
 import 'package:flutter/material.dart';

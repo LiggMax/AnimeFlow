@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:anime_flow/models/void/episode_resources_item.dart';
 import 'package:anime_flow/models/void/search_resources_item.dart';
 import 'package:anime_flow/utils/getConfigFlie.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:get/get.dart';
 import 'package:html/parser.dart';
 import 'package:logger/logger.dart';
@@ -91,14 +94,81 @@ class VideoResourcesController extends GetxController {
   }
 
   ///解析html视频源
-  static Future<String> parseVideoUrl(String playHtml) async {
+  static Future<String> getVideoSourceWithInAppWebView(
+      String url, RegExp videoRegex) async {
     final config = await GetConfigFile.loadPluginConfig();
-    final String matchVideoUrl = config['matchVideoUrl'];
+    final bool enableNestedUrl = config['matchVideo']['enableNestedUrl'];
+    final String matchNestedUrl = config['matchVideo']['matchNestedUrl'];
 
-    final RegExp regex = RegExp(r'https://[^\s]+(\.mp4|\.mkv|\.m3u8)');
+    final Completer<String> completer = Completer<String>();
+    late InAppWebViewController webViewController;
 
-    final Match? match = regex.firstMatch(playHtml);
-    logger.i(match);
-    return "";
+    final headlessWebView = HeadlessInAppWebView(
+      initialUrlRequest: URLRequest(url: WebUri(url)),
+      onLoadStop: (controller, uri) async {
+        try {
+          // 等待页面 JavaScript 执行完成
+          await Future.delayed(const Duration(seconds: 3));
+
+          // 获取页面 HTML 内容
+          final html = await controller.evaluateJavascript(
+              source: "document.documentElement.outerHTML");
+
+          if (html != null) {
+            // 清理返回的 HTML 字符串
+            final cleanHtml = html
+                .toString()
+                .replaceAll(r'\n', '\n')
+                .replaceAll(r'\"', '"')
+                .replaceAll(r"\'", "'");
+
+            // 查找视频链接
+            final directMatches = videoRegex.allMatches(cleanHtml);
+            if (directMatches.isNotEmpty) {
+              final foundVideoUrl = directMatches.first.group(0);
+
+              if (!completer.isCompleted) {
+                if (enableNestedUrl) {
+                  final nestedUrlRegex = RegExp(matchNestedUrl);
+                  final nestedUrlMatches =
+                  nestedUrlRegex.allMatches(foundVideoUrl!);
+                  final realVideoUrl = nestedUrlMatches.first.group(0);
+                  completer.complete(realVideoUrl);
+                  logger.i('✅ 找到视频源 (嵌套匹配): $realVideoUrl');
+                }
+                logger.i('✅ 找到视频源 (直接匹配): $foundVideoUrl');
+                completer.complete(foundVideoUrl);
+              }
+            }
+          }
+        } catch (e) {
+          logger.e('提取视频源时出错: $e');
+          if (!completer.isCompleted) {
+            completer.completeError('提取视频源失败: $e');
+          }
+        }
+      },
+      onWebViewCreated: (controller) {
+        webViewController = controller;
+      },
+    );
+
+    try {
+      // 启动无头 WebView
+      await headlessWebView.run();
+
+      //等待结果，超时时间 30 秒
+      final result = await completer.future.timeout(
+        const Duration(seconds: 30),
+        onTimeout: () {
+          throw TimeoutException('获取视频源超时');
+        },
+      );
+      logger.i('✅ 最终返回视频源: $result');
+      return result;
+    } finally {
+      // 清理资源
+      await headlessWebView.dispose();
+    }
   }
 }
