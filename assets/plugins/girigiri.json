@@ -10,5 +10,9 @@
   "lineList": "//ul[@class='anthology-list-play size']",
   "episode": "/li /a",
   "matchEpisodeSort": "^第\\d+[\\s\\S]*[\\d]集$",
-  "matchVideoUrl": "https://[^\\s]+(\\.mp4|\\.mkv|\\.m3u8)"
+  "matchVideo": {
+    "enableNestedUrl": true,
+    "matchNestedUrl": "^.+(m3u8|vip|xigua\\\\.php).+\\\\?",
+    "matchVideoUrl": "https://[^\\s]+(\\.mp4|\\.mkv|\\.m3u8)"
+  }
 }

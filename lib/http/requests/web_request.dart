@@ -1,7 +1,5 @@
 import 'dart:async';
-import 'dart:io';
 import 'dart:math';
-
 import 'package:anime_flow/controllers/video/video_resources_controller.dart';
 import 'package:anime_flow/http/api/common_api.dart';
 import 'package:anime_flow/models/void/episode_resources_item.dart';
@@ -10,10 +8,8 @@ import 'package:anime_flow/utils/getConfigFlie.dart';
 import 'package:anime_flow/utils/http/dio_request.dart';
 import 'package:dio/dio.dart';
 import 'package:anime_flow/constants/constants.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:logger/logger.dart';
-import 'package:flutter/material.dart';
-import 'package:webview_windows/webview_windows.dart'
-    if (dart.library.io) 'package:webview_windows/webview_windows.dart';
 
 class WebRequest {
   static Logger logger = Logger();
@@ -27,10 +23,10 @@ class WebRequest {
     final userAgent = userAgentsList[Random().nextInt(userAgentsList.length)];
 
     final response =
-        await dioRequest.get(searchURL.replaceFirst("{keyword}", "咒术回战"),
-            options: Options(headers: {
-              CommonApi.userAgent: userAgent,
-            }));
+    await dioRequest.get(searchURL.replaceFirst("{keyword}", "咒术回战"),
+        options: Options(headers: {
+          CommonApi.userAgent: userAgent,
+        }));
     getResourcesListService("/GV13093/");
     return VideoResourcesController.parseSearchHtml(response.data);
   }
@@ -51,7 +47,7 @@ class WebRequest {
     return VideoResourcesController.parseResourcesHtml(response.data);
   }
 
-  /// 获取视频源（使用 WebView 方案）
+  /// 获取视频源
   static Future<String> getVideoSourceService(String episode) async {
     final config = await GetConfigFile.loadPluginConfig();
     final String baseURL = config['baseURL'];
@@ -64,72 +60,71 @@ class WebRequest {
     );
 
     // 根据平台选择不同的实现方式
-    if (Platform.isWindows) {
-      return _getVideoSourceWithWebViewWindows(url, videoRegex);
-    } else {
-      // 对于其他平台，使用传统的 HTTP 请求方式
-      return _getVideoSourceWithHttp(url, videoRegex);
-    }
+    return _getVideoSourceWithInAppWebView(url, videoRegex);
   }
 
-  /// Windows 平台：使用 webview_windows 获取视频源
-  static Future<String> _getVideoSourceWithWebViewWindows(
+  //无头webview
+  static Future<String> _getVideoSourceWithInAppWebView(
       String url, RegExp videoRegex) async {
+    final config = await GetConfigFile.loadPluginConfig();
+    final String baseURL = config['baseURL'];
+    final bool enableNestedUrl = config['matchVideo']['enableNestedUrl'];
+    final String matchNestedUrl = config['matchVideo']['matchNestedUrl'];
+
     final Completer<String> completer = Completer<String>();
-    final webviewController = WebviewController();
+    late InAppWebViewController webViewController;
 
-    try {
-      // 初始化 WebView
-      await webviewController.initialize();
+    final headlessWebView = HeadlessInAppWebView(
+      initialUrlRequest: URLRequest(url: WebUri(url)),
+      onLoadStop: (controller, uri) async {
+        try {
+          // 等待页面 JavaScript 执行完成
+          await Future.delayed(const Duration(seconds: 3));
 
-      // 设置为不可见（尺寸设为 1x1）
-      await webviewController.setBackgroundColor(Colors.transparent);
-      await webviewController
-          .setPopupWindowPolicy(WebviewPopupWindowPolicy.deny);
+          // 获取页面 HTML 内容
+          final html = await controller.evaluateJavascript(
+              source: "document.documentElement.outerHTML"
+          );
 
-      String? foundVideoUrl;
+          if (html != null) {
+            // 清理返回的 HTML 字符串
+            final cleanHtml = html
+                .toString()
+                .replaceAll(r'\n', '\n')
+                .replaceAll(r'\"', '"')
+                .replaceAll(r"\'", "'");
 
-      // 监听页面导航完成
-      webviewController.loadingState.listen((state) async {
-        if (state == LoadingState.navigationCompleted) {
-          try {
-            // 等待页面 JavaScript 执行完成
-            await Future.delayed(const Duration(seconds: 3));
-
-            // 执行 JavaScript 获取页面完整 HTML
-            final html = await webviewController
-                .executeScript('document.documentElement.outerHTML');
-
-            if (html != null && html.toString().isNotEmpty) {
-              // 清理返回的 HTML 字符串
-              final cleanHtml = html
-                  .toString()
-                  .replaceAll(r'\n', '\n')
-                  .replaceAll(r'\"', '"')
-                  .replaceAll(r"\'", "'");
-
-              //在 HTML 中查找视频链接
-              final directMatches = videoRegex.allMatches(cleanHtml);
-              if (directMatches.isNotEmpty) {
-                foundVideoUrl = directMatches.first.group(0);
-                logger.i('✅ 找到视频源 (直接匹配): $foundVideoUrl');
+            // 查找视频链接
+            final directMatches = videoRegex.allMatches(cleanHtml);
+            if (directMatches.isNotEmpty) {
+              final foundVideoUrl = directMatches.first.group(0);
+              if (enableNestedUrl) {
+                final nestedUrlRegex = RegExp(matchNestedUrl);
+                final nestedUrlMatches = nestedUrlRegex.allMatches(foundVideoUrl!);
+                final realVideoUrl = nestedUrlMatches.first.group(0);
+                logger.i('✅ 找到视频源 (嵌套匹配): $realVideoUrl');
               }
-            } else {
+              logger.i('✅ 找到视频源 (直接匹配): $foundVideoUrl');
               if (!completer.isCompleted) {
-                completer.completeError('无法获取页面内容');
+                completer.complete(foundVideoUrl);
               }
-            }
-          } catch (e) {
-            logger.e('提取视频源时出错: $e');
-            if (!completer.isCompleted) {
-              completer.completeError('提取视频源失败: $e');
             }
           }
+        } catch (e) {
+          logger.e('提取视频源时出错: $e');
+          if (!completer.isCompleted) {
+            completer.completeError('提取视频源失败: $e');
+          }
         }
-      });
+      },
+      onWebViewCreated: (controller) {
+        webViewController = controller;
+      },
+    );
 
-      // 加载页面
-      await webviewController.loadUrl(url);
+    try {
+      // 启动无头 WebView
+      await headlessWebView.run();
 
       // 等待结果，超时时间 30 秒
       final result = await completer.future.timeout(
@@ -138,75 +133,11 @@ class WebRequest {
           throw TimeoutException('获取视频源超时');
         },
       );
-
-      return foundVideoUrl ?? '';
-    } catch (e) {
-      logger.e('WebView 获取视频源失败: $e');
-      rethrow;
+      logger.i('✅ 找到视频源 (无头 WebView): $result');
+      return result;
     } finally {
       // 清理资源
-      try {
-        await webviewController.dispose();
-      } catch (e) {
-        logger.w('WebView 清理失败: $e');
-      }
-    }
-  }
-
-  /// 其他平台：使用 HTTP 请求 + HTML 解析
-  static Future<String> _getVideoSourceWithHttp(
-      String url, RegExp videoRegex) async {
-    try {
-      logger.i('使用 HTTP 方式获取视频源: $url');
-
-      final userAgent = userAgentsList[Random().nextInt(userAgentsList.length)];
-
-      final response = await dioRequest.get(
-        url,
-        options: Options(
-          headers: {
-            CommonApi.userAgent: userAgent,
-            'Accept':
-                'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-            'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8',
-            'Accept-Encoding': 'gzip, deflate',
-            'Connection': 'keep-alive',
-          },
-          followRedirects: true,
-        ),
-      );
-
-      final htmlContent = response.data.toString();
-
-      // 直接匹配视频链接
-      final matches = videoRegex.allMatches(htmlContent);
-      if (matches.isNotEmpty) {
-        final videoUrl = matches.first.group(0)!;
-        logger.i('✅ 找到视频源: $videoUrl');
-        return videoUrl;
-      }
-
-      // 从 script 标签提取
-      final scriptRegex = RegExp(
-        r'<script[^>]*>([\s\S]*?)</script>',
-        caseSensitive: false,
-      );
-
-      final scriptMatches = scriptRegex.allMatches(htmlContent);
-      for (final match in scriptMatches) {
-        final scriptContent = match.group(1) ?? '';
-        final videoMatch = videoRegex.firstMatch(scriptContent);
-        if (videoMatch != null) {
-          final videoUrl = videoMatch.group(0)!;
-          logger.i('✅ 找到视频源 (script): $videoUrl');
-          return videoUrl;
-        }
-      }
-
-      throw Exception('未找到视频源');
-    } catch (e) {
-      logger.e('HTTP 获取视频源失败: $e');
-      rethrow;
+      await headlessWebView.dispose();
     }
   }
 }
