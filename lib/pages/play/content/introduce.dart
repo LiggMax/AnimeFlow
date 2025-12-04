@@ -1,8 +1,11 @@
 import 'package:anime_flow/constants/play_layout_constant.dart';
 import 'package:anime_flow/controllers/play/PlayPageController.dart';
+import 'package:anime_flow/controllers/video/video_source_controller.dart';
 import 'package:anime_flow/data/crawler/html_request.dart';
 import 'package:anime_flow/models/episodes_item.dart';
 import 'package:anime_flow/models/hot_item.dart';
+import 'package:anime_flow/models/void/episode_resources_item.dart';
+import 'package:anime_flow/models/void/search_resources_item.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:logger/logger.dart';
@@ -20,13 +23,18 @@ class IntroduceView extends StatefulWidget {
 
 class _IntroduceViewState extends State<IntroduceView> {
   late PlayPageController playPageController;
+  late VideoSourceController videoResourcesController;
   Worker? _screenWorker; // 屏幕宽高监听器
+
+  late List<SearchResourcesItem> _searchList;
+  late List<EpisodeResourcesItem> _episodesList;
 
   @override
   void initState() {
     super.initState();
     playPageController = Get.find<PlayPageController>();
-    getSearchSubjectList();
+    videoResourcesController = Get.find<VideoSourceController>();
+    getVideoResources();
 
     // 初始化监听器
     _screenWorker = ever(playPageController.isWideScreen, (isWide) {
@@ -47,10 +55,18 @@ class _IntroduceViewState extends State<IntroduceView> {
     });
   }
 
-  void getSearchSubjectList() {
-    WebRequest.getSearchSubjectListService(
+  void getVideoResources() async {
+    List<SearchResourcesItem> searchList =
+        await WebRequest.getSearchSubjectListService(
       widget.subject.nameCN ?? widget.subject.name,
     );
+    var episodesList =
+        await WebRequest.getResourcesListService(searchList[0].link);
+
+    String videoRul = await WebRequest.getVideoSourceService(
+        episodesList[0].episodes[0].like);
+
+    videoResourcesController.setVideoRul(videoRul);
   }
 
   @override

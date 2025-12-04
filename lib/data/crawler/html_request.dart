@@ -22,12 +22,11 @@ class WebRequest {
     final userAgent = userAgentsList[Random().nextInt(userAgentsList.length)];
 
     final response =
-        await dioRequest.get(searchURL.replaceFirst("{keyword}", "咒术回战"),
+        await dioRequest.get(searchURL.replaceFirst("{keyword}", keyword),
             options: Options(headers: {
               CommonApi.userAgent: userAgent,
             }));
-    getResourcesListService("/GV13093/");
-    return VideoResourcesController.parseSearchHtml(response.data);
+    return HtmlCrawler.parseSearchHtml(response.data);
   }
 
   ///获取资源列表
@@ -42,15 +41,14 @@ class WebRequest {
         options: Options(headers: {
           CommonApi.userAgent: userAgent,
         }));
-    getVideoSourceService("/playGV26765-1-1/");
-    return VideoResourcesController.parseResourcesHtml(response.data);
+    return HtmlCrawler.parseResourcesHtml(response.data);
   }
 
   /// 获取视频源
-  static Future<String> getVideoSourceService(String episode) async {
+  static Future<String> getVideoSourceService(String link) async {
     final config = await GetConfigFile.loadPluginConfig();
     final String baseURL = config['baseURL'];
-    final url = baseURL + episode;
+    final url = baseURL + link;
 
     // 正则表达式：匹配 https:// 开头，以 .mp4、.mkv 或 .m3u8 结尾的链接
     final RegExp videoRegex = RegExp(
@@ -59,7 +57,7 @@ class WebRequest {
     );
 
     // 根据平台选择不同的实现方式
-    return VideoResourcesController.getVideoSourceWithInAppWebView(
+    return HtmlCrawler.getVideoSourceWithInAppWebView(
         url, videoRegex);
   }
 }

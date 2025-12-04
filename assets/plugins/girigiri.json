@@ -12,7 +12,7 @@
   "matchEpisodeSort": "^第\\d+[\\s\\S]*[\\d]集$",
   "matchVideo": {
     "enableNestedUrl": true,
-    "matchNestedUrl": "^.+(m3u8|vip|xigua\\\\.php).+\\\\?",
+    "matchNestedUrl": "https?://[^\\s&\"]+\\.m3u8|.mp4|.mkv",
     "matchVideoUrl": "https://[^\\s]+(\\.mp4|\\.mkv|\\.m3u8)"
   }
 }

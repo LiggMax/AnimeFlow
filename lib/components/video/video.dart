@@ -1,6 +1,8 @@
 import 'package:anime_flow/components/video/controls/video_controls.dart';
+import 'package:anime_flow/controllers/video/video_source_controller.dart';
 import 'package:anime_flow/models/hot_item.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 
@@ -16,15 +18,18 @@ class VideoView extends StatefulWidget {
 class _VideoViewState extends State<VideoView> {
   late final player = Player();
   late final controller = VideoController(player);
+  late VideoSourceController videoSourceController;
 
   @override
   void initState() {
     super.initState();
-    player.open(
-      Media(
-        'https://ai.girigirilove.net/zijian/oldanime/2025/10/cht/SPYxFAMILYS3CHT/38/playlist.m3u8',
-      ),
-    );
+    videoSourceController = Get.find<VideoSourceController>();
+
+    videoSourceController.videoRul.listen((url) {
+      player.open(
+        Media(url),
+      );
+    });
   }
 
   @override

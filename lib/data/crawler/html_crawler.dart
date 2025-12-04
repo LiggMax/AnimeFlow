@@ -4,12 +4,11 @@ import 'package:anime_flow/models/void/episode_resources_item.dart';
 import 'package:anime_flow/models/void/search_resources_item.dart';
 import 'package:anime_flow/utils/getConfigFlie.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
-import 'package:get/get.dart';
 import 'package:html/parser.dart';
 import 'package:logger/logger.dart';
 import 'package:xpath_selector_html_parser/xpath_selector_html_parser.dart';
 
-class VideoResourcesController extends GetxController {
+class HtmlCrawler {
   static Logger logger = Logger();
 
   ///解析html搜索页
@@ -132,12 +131,14 @@ class VideoResourcesController extends GetxController {
                   final nestedUrlRegex = RegExp(matchNestedUrl);
                   final nestedUrlMatches =
                   nestedUrlRegex.allMatches(foundVideoUrl!);
+                  logger.i("原链接: $foundVideoUrl");
                   final realVideoUrl = nestedUrlMatches.first.group(0);
                   completer.complete(realVideoUrl);
                   logger.i('✅ 找到视频源 (嵌套匹配): $realVideoUrl');
+                } else {
+                  logger.i('✅ 找到视频源 (直接匹配): $foundVideoUrl');
+                  completer.complete(foundVideoUrl);
                 }
-                logger.i('✅ 找到视频源 (直接匹配): $foundVideoUrl');
-                completer.complete(foundVideoUrl);
               }
             }
           }
