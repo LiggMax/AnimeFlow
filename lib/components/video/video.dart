@@ -1,5 +1,6 @@
 import 'package:anime_flow/components/video/controls/video_controls.dart';
 import 'package:anime_flow/controllers/video/video_source_controller.dart';
+import 'package:anime_flow/controllers/video/video_state_controller.dart';
 import 'package:anime_flow/models/hot_item.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -26,10 +27,10 @@ class _VideoViewState extends State<VideoView> {
     videoSourceController = Get.find<VideoSourceController>();
 
     videoSourceController.videoRul.listen((url) {
-      player.open(
-        Media(url),
-      );
+      player.open(Media(url));
     });
+
+    Get.put(VideoStateController(player));
   }
 
   @override

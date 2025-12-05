@@ -1,10 +1,10 @@
-import 'package:anime_flow/controllers/video/video_controller.dart';
+import 'package:anime_flow/controllers/video/video_ui_state_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 /// 视频播放进度条组件
 class VideoProgressBar extends StatelessWidget {
-  final VideoController videoController;
+  final VideoUiStateController videoController;
 
   const VideoProgressBar({super.key, required this.videoController});
 
@@ -95,7 +95,7 @@ class _CustomTrackShape extends RoundedRectSliderTrackShape {
 
 /// 视频时间显示组件
 class VideoTimeDisplay extends StatelessWidget {
-  final VideoController videoController;
+  final VideoUiStateController videoController;
 
   const VideoTimeDisplay({super.key, required this.videoController});
 
@@ -129,7 +129,7 @@ class VideoTimeDisplay extends StatelessWidget {
 
 /// 播放状态图标组件
 class PlayStatusIcon extends StatelessWidget {
-  final VideoController videoController;
+  final VideoUiStateController videoController;
 
   const PlayStatusIcon(this.videoController, {super.key});
 

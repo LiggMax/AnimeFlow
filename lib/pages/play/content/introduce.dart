@@ -146,9 +146,31 @@ class _IntroduceViewState extends State<IntroduceView> {
                             )
                           : OutlinedButton(
                               onPressed: () {
-                                VideoSourceDrawers.showSourceSideDrawer(
-                                    context, isVideoSource, _episodesList,
-                                    title: "数据源");
+                                Get.generalDialog(
+                                    barrierDismissible: true,
+                                    barrierLabel: "SourceDrawer",
+                                    barrierColor: Colors.black54,
+                                    transitionDuration:
+                                        const Duration(milliseconds: 300),
+                                    // 动画
+                                    transitionBuilder: (context, animation,
+                                        secondaryAnimation, child) {
+                                      return SlideTransition(
+                                        position: Tween<Offset>(
+                                          begin: const Offset(1, 0),
+                                          end: Offset.zero,
+                                        ).animate(CurvedAnimation(
+                                          parent: animation,
+                                          curve: Curves.easeOut,
+                                        )),
+                                        child: child,
+                                      );
+                                    },
+                                    pageBuilder: (context, animation,
+                                        secondaryAnimation) {
+                                      return VideoSourceDrawers(
+                                          "数据源", _episodesList);
+                                    });
                               },
                               child: Row(
                                 mainAxisAlignment:

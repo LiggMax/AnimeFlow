@@ -1,6 +1,6 @@
 import 'package:anime_flow/controllers/play/PlayPageController.dart';
 import 'package:anime_flow/models/hot_item.dart';
-import 'package:anime_flow/controllers/video/video_controller.dart'
+import 'package:anime_flow/controllers/video/video_ui_state_controller.dart'
     as controller;
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -22,19 +22,20 @@ class VideoControlsUi extends StatefulWidget {
 }
 
 class _VideoControlsUiState extends State<VideoControlsUi> {
-  late controller.VideoController videoController;
+  late controller.VideoUiStateController videoController;
   late PlayPageController playPageController;
 
   @override
   void initState() {
-    videoController = Get.put(controller.VideoController(widget.player));
+    videoController = Get.put(controller.VideoUiStateController(widget.player));
     playPageController = Get.put(PlayPageController());
     super.initState();
   }
 
   @override
   void dispose() {
-    Get.delete<VideoController>();
+    Get.delete<controller.VideoUiStateController>();
+    Get.delete<PlayPageController>();
     super.dispose();
   }
 
@@ -119,9 +120,48 @@ class _VideoControlsUiState extends State<VideoControlsUi> {
 
       ///中间
       Expanded(
-          child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
+          child: Stack(
+        alignment: Alignment.center,
         children: [
+          //解析动画
+          Obx(() => videoController.isParsing.value
+              ? Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    CircularProgressIndicator(
+                      color: Theme.of(context).primaryColor,
+                    ),
+                    SizedBox(height: 10),
+                    Text(
+                      '视频资源解析中...',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ],
+                )
+              : SizedBox.shrink()),
+          // 缓冲动画
+          Obx(() => videoController.isBuffering.value
+              ? Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    CircularProgressIndicator(
+                      color: Theme.of(context).primaryColor,
+                    ),
+                    SizedBox(height: 5),
+                    Text(
+                      '缓冲中...',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ],
+                )
+              : SizedBox.shrink()),
+
           // 播放状态图标
           PlayStatusIcon(videoController),
         ],
