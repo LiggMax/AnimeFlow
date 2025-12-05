@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 
-class Platform {
+class PlatformUtil {
   /// 判断是否为桌面端
   static bool get isDesktop {
     return defaultTargetPlatform == TargetPlatform.linux ||

@@ -10,7 +10,7 @@ import 'package:get/get.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 import 'package:anime_flow/components/video/controls/video_ui_components.dart';
-import 'package:anime_flow/utils/platform.dart';
+import 'package:anime_flow/utils/platform_util.dart';
 
 ///播放器控件
 class VideoControlsUi extends StatefulWidget {
@@ -92,7 +92,7 @@ class _VideoControlsUiState extends State<VideoControlsUi> {
                           //右侧
                           Row(
                             children: [
-                              if (Platform.isDesktop)
+                              if (PlatformUtil.isDesktop)
                                 Obx(() => playPageController.isWideScreen.value
                                     ? IconButton(
                                         onPressed: () => playPageController

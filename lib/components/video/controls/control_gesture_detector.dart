@@ -4,6 +4,8 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../../utils/platform_util.dart';
+
 /// 视频控制手势检测器
 class ControlGestureDetector extends StatefulWidget {
   final Widget child;
@@ -25,11 +27,11 @@ class _ControlGestureDetectorState extends State<ControlGestureDetector> {
     // 获取视频状态控制器
     final videoStateController = Get.find<VideoStateController>();
     final videoUiStateController = Get.find<VideoUiStateController>();
-    
+
     // 获取屏幕尺寸，用于计算滑动距离和判断屏幕区域
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
-    
+
     return Listener(
       // 鼠标指针信号事件监听（用于鼠标滚轮）
       onPointerSignal: (event) {
@@ -46,21 +48,21 @@ class _ControlGestureDetectorState extends State<ControlGestureDetector> {
         onDoubleTap: () {
           videoStateController.playOrPauseVideo();
         },
-        
+
         // 单击事件：显示/隐藏播放器控件UI
         onTap: () {
           videoUiStateController.showOrHideControlsUi();
         },
-        
+
         // 拖动开始事件：记录起始位置并判断屏幕区域
         onPanStart: (details) {
           // 记录拖动起始坐标
           _dragStartX = details.globalPosition.dx;
           _dragStartY = details.globalPosition.dy;
-          
+
           // 判断是否在屏幕右半侧开始拖动
           _isRightSide = _dragStartX > screenWidth / 2;
-          
+
           // 重置拖动类型，等待后续判断
           _dragType = null;
         },
@@ -69,7 +71,7 @@ class _ControlGestureDetectorState extends State<ControlGestureDetector> {
           // 获取当前拖动位置
           final currentX = details.globalPosition.dx;
           final currentY = details.globalPosition.dy;
-          
+
           // 计算相对于起始位置的水平和垂直移动距离
           final deltaX = (currentX - _dragStartX).abs();
           final deltaY = (currentY - _dragStartY).abs();
@@ -97,10 +99,12 @@ class _ControlGestureDetectorState extends State<ControlGestureDetector> {
             videoUiStateController.updateHorizontalDrag(currentX, screenWidth);
           } else if (_dragType == 'vertical' && _isRightSide) {
             // 垂直拖动（右半屏）：更新音量
-            videoStateController.updateVerticalDrag(
-              currentY - _dragStartY, // 拖动的垂直距离
-              screenHeight, // 屏幕高度（用于计算音量变化百分比）
-            );
+            if (PlatformUtil.isMobile) {
+              videoStateController.updateVerticalDrag(
+                currentY - _dragStartY, // 拖动的垂直距离
+                screenHeight, // 屏幕高度（用于计算音量变化百分比）
+              );
+            }
           }
         },
         // 拖动结束事件：完成拖动操作
@@ -112,11 +116,11 @@ class _ControlGestureDetectorState extends State<ControlGestureDetector> {
             // 垂直拖动结束：应用新的音量并隐藏指示器
             videoStateController.endVerticalDrag();
           }
-          
+
           // 重置拖动类型，准备下一次拖动
           _dragType = null;
         },
-        
+
         // 拖动取消事件：用户中断拖动操作
         onPanCancel: () {
           if (_dragType == 'horizontal') {
@@ -126,7 +130,7 @@ class _ControlGestureDetectorState extends State<ControlGestureDetector> {
             // 垂直拖动取消：结束音量调整并隐藏指示器
             videoStateController.endVerticalDrag();
           }
-          
+
           // 重置拖动类型
           _dragType = null;
         },
