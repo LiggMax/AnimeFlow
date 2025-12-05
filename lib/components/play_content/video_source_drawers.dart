@@ -1,10 +1,14 @@
 import 'package:anime_flow/constants/play_layout_constant.dart';
+import 'package:anime_flow/models/void/episode_resources_item.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class VideoSourceDrawers {
   /// 数据源侧边抽屉
-  static void showSourceSideDrawer(BuildContext context, {String? title}) {
+  static void showSourceSideDrawer(BuildContext context, bool isVideoSource,
+      List<EpisodeResourcesItem> episodesList,
+      {String? title}) {
+    print('接收到的数据： $episodesList');
     Get.generalDialog(
       barrierDismissible: true,
       barrierLabel: "SourceDrawer",
@@ -41,19 +45,57 @@ class VideoSourceDrawers {
                 ),
                 const SizedBox(height: 10),
                 Expanded(
-                  child: SingleChildScrollView(
-                    child: Column(
-                      children: [
-                        Card.outlined(
-                          child: Padding(
-                            padding: EdgeInsets.all(8),
-                            child: SizedBox(
-                              width: double.infinity,
-                              child: Text("数据源内容"),
-                            ),
-                          ),
-                        )
-                      ],
+                  child: Material(
+                    child: ListView.builder(
+                      itemCount: episodesList.length,
+                      itemBuilder: (context, index) {
+                        final resourceItem = episodesList[index];
+                        return Column(
+                          children: resourceItem.episodes.map((episode) {
+                            return Card.filled(
+                                margin: EdgeInsets.only(bottom: 8),
+                                child: InkWell(
+                                  onTap: () {
+                                    // Get.back();
+                                    print(episode.like);
+                                  },
+                                  child: Padding(
+                                    padding: EdgeInsets.all(12),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        // 剧集标题
+                                        Text(
+                                          '第${episode.episodeSort}集',
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        SizedBox(height: 12),
+                                        // 线路信息
+                                        Row(
+                                          children: [
+                                            Icon(Icons.settings,
+                                                size: 16, color: Colors.grey),
+                                            SizedBox(width: 8),
+                                            Spacer(),
+                                            Text(
+                                              '线路${index + 1}',
+                                              style: TextStyle(
+                                                  fontSize: 12,
+                                                  color: Colors.grey[400]),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ));
+                          }).toList(),
+                        );
+                      },
                     ),
                   ),
                 ),
