@@ -54,13 +54,10 @@ class _PlayPageState extends State<PlayPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Expanded(
-                  child: Container(
-                    color: Colors.black,
-                    child: Center(
-                      child: VideoView(
-                        key: _videoKey,
-                        subject: subject,
-                      ),
+                  child: Center(
+                    child: VideoView(
+                      key: _videoKey,
+                      subject: subject,
                     ),
                   ),
                 ),

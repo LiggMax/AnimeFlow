@@ -1,3 +1,4 @@
+import 'package:anime_flow/components/play_content/video_source_drawers.dart';
 import 'package:anime_flow/constants/play_layout_constant.dart';
 import 'package:anime_flow/controllers/play/PlayPageController.dart';
 import 'package:anime_flow/controllers/video/video_source_controller.dart';
@@ -57,11 +58,11 @@ class _IntroduceViewState extends State<IntroduceView> {
 
   void getVideoResources() async {
     List<SearchResourcesItem> searchList =
-        await WebRequest.getSearchSubjectListService(
+    await WebRequest.getSearchSubjectListService(
       widget.subject.nameCN ?? widget.subject.name,
     );
     var episodesList =
-        await WebRequest.getResourcesListService(searchList[0].link);
+    await WebRequest.getResourcesListService(searchList[0].link);
 
     String videoRul = await WebRequest.getVideoSourceService(
         episodesList[0].episodes[0].like);
@@ -90,6 +91,7 @@ class _IntroduceViewState extends State<IntroduceView> {
                 textAlign: TextAlign.left,
               ),
               SizedBox(height: 10),
+              //章节
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -116,6 +118,35 @@ class _IntroduceViewState extends State<IntroduceView> {
                   //横向滚动卡片
                   _scrollTheCardHorizontally()
                 ],
+              ),
+              //数据源
+              Card(
+                child: Padding(
+                  padding: EdgeInsets.all(10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        "数据源",
+                        style: TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.bold),
+                      ),
+                      OutlinedButton(
+                          onPressed: () {
+                            VideoSourceDrawers.showSourceSideDrawer(
+                                context, title: "数据源");
+                          },
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Icon(Icons.sync_alt_rounded),
+                              SizedBox(width: 10),
+                              Text("切换源")
+                            ],
+                          ))
+                    ],
+                  ),
+                ),
               )
             ],
           ),
@@ -130,10 +161,15 @@ class _IntroduceViewState extends State<IntroduceView> {
         backgroundColor: Colors.transparent,
         Container(
           //TODO 获取竖屏播放器高度状态，动态设置底部抽屉弹出占满剩余高度
-          height: MediaQuery.of(context).size.height * 0.75,
+          height: MediaQuery
+              .of(context)
+              .size
+              .height * 0.75,
           padding: EdgeInsets.all(10),
           decoration: BoxDecoration(
-            color: Theme.of(context).cardColor,
+            color: Theme
+                .of(context)
+                .cardColor,
             borderRadius: BorderRadius.vertical(top: Radius.circular(15)),
           ),
           child: Column(
@@ -157,7 +193,11 @@ class _IntroduceViewState extends State<IntroduceView> {
                   style: TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.bold,
-                    color: Theme.of(context).textTheme.titleLarge?.color,
+                    color: Theme
+                        .of(context)
+                        .textTheme
+                        .titleLarge
+                        ?.color,
                     decoration: TextDecoration.none,
                   ),
                 ),
@@ -185,7 +225,9 @@ class _IntroduceViewState extends State<IntroduceView> {
             width: PlayLayoutConstant.playContentWidth,
             height: double.infinity,
             padding: const EdgeInsets.all(16),
-            color: Theme.of(context).cardColor,
+            color: Theme
+                .of(context)
+                .cardColor,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -197,7 +239,11 @@ class _IntroduceViewState extends State<IntroduceView> {
                       style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.bold,
-                          color: Theme.of(context).textTheme.titleLarge?.color,
+                          color: Theme
+                              .of(context)
+                              .textTheme
+                              .titleLarge
+                              ?.color,
                           decoration: TextDecoration.none),
                     ),
                     IconButton(
@@ -245,7 +291,7 @@ class _IntroduceViewState extends State<IntroduceView> {
             final double spacing = 8.0;
             // 动态计算列数，最小2列，最大6列
             final int crossAxisCount =
-                (constraints.maxWidth / 160).floor().clamp(2, 6);
+            (constraints.maxWidth / 160).floor().clamp(2, 6);
             final double itemWidth =
                 (constraints.maxWidth - (crossAxisCount - 1) * spacing) /
                     crossAxisCount;
@@ -281,7 +327,7 @@ class _IntroduceViewState extends State<IntroduceView> {
                                     ? episode.nameCN
                                     : episode.name,
                                 style:
-                                    TextStyle(fontSize: 12, color: Colors.grey),
+                                TextStyle(fontSize: 12, color: Colors.grey),
                               ),
                             ],
                           ),
@@ -318,7 +364,7 @@ class _IntroduceViewState extends State<IntroduceView> {
             child: Row(
               children: List.generate(
                 episodeList.length,
-                (index) {
+                    (index) {
                   final episode = episodeList[index];
                   return Card(
                     child: InkWell(
