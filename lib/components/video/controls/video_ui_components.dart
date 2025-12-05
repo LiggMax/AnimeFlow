@@ -4,18 +4,18 @@ import 'package:get/get.dart';
 
 /// 视频播放进度条组件
 class VideoProgressBar extends StatelessWidget {
-  final VideoUiStateController videoController;
+  final VideoUiStateController videoUiStateController;
 
-  const VideoProgressBar({super.key, required this.videoController});
+  const VideoProgressBar({super.key, required this.videoUiStateController});
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       height: 40,
       child: Obx(() {
-        final max = videoController.duration.value.inMilliseconds.toDouble();
-        final value = videoController.position.value.inMilliseconds.toDouble();
-        final buffer = videoController.buffer.value.inMilliseconds.toDouble();
+        final max = videoUiStateController.duration.value.inMilliseconds.toDouble();
+        final value = videoUiStateController.position.value.inMilliseconds.toDouble();
+        final buffer = videoUiStateController.buffer.value.inMilliseconds.toDouble();
 
         return Stack(
           alignment: Alignment.centerLeft,
@@ -56,13 +56,13 @@ class VideoProgressBar extends StatelessWidget {
                 value: value.clamp(0.0, max > 0 ? max : 1.0),
                 min: 0.0,
                 max: max > 0 ? max : 1.0,
-                onChangeStart: (_) => videoController.startDrag(),
+                onChangeStart: (_) => videoUiStateController.startDrag(),
                 onChanged: (v) {
-                  videoController.position.value =
+                  videoUiStateController.position.value =
                       Duration(milliseconds: v.toInt());
                 },
                 onChangeEnd: (v) =>
-                    videoController.endDrag(Duration(milliseconds: v.toInt())),
+                    videoUiStateController.endDrag(Duration(milliseconds: v.toInt())),
               ),
             ),
           ],

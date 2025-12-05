@@ -14,6 +14,9 @@ class VideoUiStateController extends GetxController {
   final RxBool showPlayStatusIcon = false.obs; // 是否显示播放状态图标
   final RxBool isParsing = false.obs; //是否正在解析视频资源
 
+  // 播放状态
+  bool get isPlaying => _isPlaying.value;
+
   // 控制图标显示的计时器
   Timer? _iconTimer;
 
@@ -55,8 +58,6 @@ class VideoUiStateController extends GetxController {
     });
   }
 
-  // 播放状态
-  bool get isPlaying => _isPlaying.value;
 
   void togglePlay() {
     if (_isPlaying.value) {

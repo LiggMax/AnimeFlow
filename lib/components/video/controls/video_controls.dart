@@ -1,7 +1,6 @@
 import 'package:anime_flow/controllers/play/PlayPageController.dart';
 import 'package:anime_flow/models/hot_item.dart';
-import 'package:anime_flow/controllers/video/video_ui_state_controller.dart'
-    as controller;
+import 'package:anime_flow/controllers/video/video_ui_state_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -22,19 +21,18 @@ class VideoControlsUi extends StatefulWidget {
 }
 
 class _VideoControlsUiState extends State<VideoControlsUi> {
-  late controller.VideoUiStateController videoController;
+  late VideoUiStateController videoUiStateController;
   late PlayPageController playPageController;
 
   @override
   void initState() {
-    videoController = Get.put(controller.VideoUiStateController(widget.player));
-    playPageController = Get.put(PlayPageController());
+    videoUiStateController = Get.find<VideoUiStateController>();
+    playPageController = Get.find<PlayPageController>();
     super.initState();
   }
 
   @override
   void dispose() {
-    Get.delete<controller.VideoUiStateController>();
     Get.delete<PlayPageController>();
     super.dispose();
   }
@@ -124,7 +122,7 @@ class _VideoControlsUiState extends State<VideoControlsUi> {
         alignment: Alignment.center,
         children: [
           //解析动画
-          Obx(() => videoController.isParsing.value
+          Obx(() => videoUiStateController.isParsing.value
               ? Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -143,7 +141,7 @@ class _VideoControlsUiState extends State<VideoControlsUi> {
                 )
               : SizedBox.shrink()),
           // 缓冲动画
-          Obx(() => videoController.isBuffering.value
+          Obx(() => videoUiStateController.isBuffering.value
               ? Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -163,7 +161,7 @@ class _VideoControlsUiState extends State<VideoControlsUi> {
               : SizedBox.shrink()),
 
           // 播放状态图标
-          PlayStatusIcon(videoController),
+          PlayStatusIcon(videoUiStateController),
         ],
       )),
 
@@ -183,7 +181,7 @@ class _VideoControlsUiState extends State<VideoControlsUi> {
               // 时间显示组件
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 12),
-                child: VideoTimeDisplay(videoController: videoController),
+                child: VideoTimeDisplay(videoController: videoUiStateController),
               ),
 
               Row(
@@ -209,10 +207,10 @@ class _VideoControlsUiState extends State<VideoControlsUi> {
                     },
                     child: Obx(() => IconButton(
                         padding: EdgeInsets.all(0),
-                        key: ValueKey<bool>(videoController.isPlaying),
-                        onPressed: videoController.togglePlay,
+                        key: ValueKey<bool>(videoUiStateController.isPlaying),
+                        onPressed: videoUiStateController.togglePlay,
                         icon: Icon(
-                          videoController.isPlaying
+                          videoUiStateController.isPlaying
                               ? Icons.pause_rounded
                               : Icons.play_arrow_rounded,
                           size: 33,
@@ -222,7 +220,7 @@ class _VideoControlsUiState extends State<VideoControlsUi> {
 
                   // 进度条
                   Expanded(
-                    child: VideoProgressBar(videoController: videoController),
+                    child: VideoProgressBar(videoUiStateController: videoUiStateController),
                   ),
 
                   // 全屏按钮
