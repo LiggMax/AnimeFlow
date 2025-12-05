@@ -1,7 +1,10 @@
 import 'package:anime_flow/constants/play_layout_constant.dart';
+import 'package:anime_flow/controllers/video/video_source_controller.dart';
+import 'package:anime_flow/data/crawler/html_request.dart';
 import 'package:anime_flow/models/void/episode_resources_item.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:logger/logger.dart';
 
 class VideoSourceDrawers {
   /// 数据源侧边抽屉
@@ -14,6 +17,19 @@ class VideoSourceDrawers {
       barrierLabel: "SourceDrawer",
       barrierColor: Colors.black54,
       transitionDuration: const Duration(milliseconds: 300),
+      // 动画
+      transitionBuilder: (context, animation, secondaryAnimation, child) {
+        return SlideTransition(
+          position: Tween<Offset>(
+            begin: const Offset(1, 0),
+            end: Offset.zero,
+          ).animate(CurvedAnimation(
+            parent: animation,
+            curve: Curves.easeOut,
+          )),
+          child: child,
+        );
+      },
       pageBuilder: (context, animation, secondaryAnimation) {
         return Align(
           alignment: Alignment.centerRight,
@@ -55,9 +71,70 @@ class VideoSourceDrawers {
                             return Card.filled(
                                 margin: EdgeInsets.only(bottom: 8),
                                 child: InkWell(
-                                  onTap: () {
-                                    // Get.back();
-                                    print(episode.like);
+                                  onTap: () async {
+                                    final logger = Logger();
+                                    final videoSourceController =
+                                        Get.find<VideoSourceController>();
+
+                                    try {
+                                      // 显示加载提示
+                                      Get.dialog(
+                                        Center(
+                                          child: Card(
+                                            child: Padding(
+                                              padding: EdgeInsets.all(20),
+                                              child: Column(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  CircularProgressIndicator(),
+                                                  SizedBox(height: 16),
+                                                  Text('正在获取视频源...'),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        barrierDismissible: false,
+                                      );
+
+                                      // 异步获取视频源
+                                      final videoUrl = await WebRequest
+                                          .getVideoSourceService(episode.like);
+
+                                      logger.i('获取到视频源: $videoUrl');
+
+                                      // 更新视频源到控制器
+                                      videoSourceController
+                                          .setVideoRul(videoUrl);
+
+                                      // 关闭加载提示
+                                      Get.back();
+
+                                      // 关闭侧边抽屉
+                                      Get.back();
+
+                                      // 显示成功提示
+                                      Get.snackbar(
+                                        '成功',
+                                        '视频源已切换',
+                                        duration: Duration(seconds: 2),
+                                      );
+                                    } catch (e) {
+                                      logger.e('获取视频源失败: $e');
+
+                                      // 关闭加载提示（如果还在显示）
+                                      if (Get.isDialogOpen == true) {
+                                        Get.back();
+                                      }
+
+                                      // 显示错误提示
+                                      Get.snackbar(
+                                        '错误',
+                                        '获取视频源失败: $e',
+                                        duration: Duration(seconds: 3),
+                                        backgroundColor: Colors.red.shade100,
+                                      );
+                                    }
                                   },
                                   child: Padding(
                                     padding: EdgeInsets.all(12),
@@ -82,10 +159,10 @@ class VideoSourceDrawers {
                                             SizedBox(width: 8),
                                             Spacer(),
                                             Text(
-                                              '线路${index + 1}',
+                                              episodesList[index].lineNames,
                                               style: TextStyle(
-                                                  fontSize: 12,
-                                                  color: Colors.grey[400]),
+                                                fontSize: 12,
+                                              ),
                                             ),
                                           ],
                                         ),
@@ -102,18 +179,6 @@ class VideoSourceDrawers {
               ],
             ),
           ),
-        );
-      },
-      transitionBuilder: (context, animation, secondaryAnimation, child) {
-        return SlideTransition(
-          position: Tween<Offset>(
-            begin: const Offset(1, 0),
-            end: Offset.zero,
-          ).animate(CurvedAnimation(
-            parent: animation,
-            curve: Curves.easeOut,
-          )),
-          child: child,
         );
       },
     );

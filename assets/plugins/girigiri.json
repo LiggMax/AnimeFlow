@@ -6,7 +6,7 @@
   "searchList": "//div[@class='vod-detail style-detail cor4 search-list']",
   "searchName": "//div/div[2] /a /h3",
   "searchLink": "//div[@class='detail-info rel flex-auto lightSpeedIn'] /a",
-  "lineNames": "//div[@class='swiper-wrapper'] //i",
+  "lineNames": "//div[@class='swiper-wrapper'] //a",
   "lineList": "//ul[@class='anthology-list-play size']",
   "episode": "/li /a",
   "matchEpisodeSort": "^第\\d+[\\s\\S]*[\\d]集$",
