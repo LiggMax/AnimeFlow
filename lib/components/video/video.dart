@@ -21,12 +21,13 @@ class _VideoViewState extends State<VideoView> {
   late final player = Player();
   late final controller = VideoController(player);
   late VideoSourceController videoSourceController;
+  late VideoUiStateController videoUiStateController;
 
   @override
   void initState() {
     super.initState();
     videoSourceController = Get.find<VideoSourceController>();
-    Get.put(VideoUiStateController(player));
+    videoUiStateController = Get.put(VideoUiStateController(player));
     videoSourceController.videoRul.listen((url) {
       player.open(Media(url));
     });
@@ -36,6 +37,8 @@ class _VideoViewState extends State<VideoView> {
 
   @override
   void dispose() {
+    Get.delete<VideoUiStateController>();
+    Get.delete<VideoStateController>();
     player.dispose();
     super.dispose();
   }

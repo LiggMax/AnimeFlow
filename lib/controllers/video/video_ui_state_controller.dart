@@ -13,6 +13,7 @@ class VideoUiStateController extends GetxController {
   final RxBool isDragging = false.obs; // 是否正在拖拽进度条
   final RxBool showPlayStatusIcon = false.obs; // 是否显示播放状态图标
   final RxBool isParsing = false.obs; //是否正在解析视频资源
+  final RxBool isShowControlsUi = true.obs; //是否显示控件ui
 
   // 播放状态
   bool get isPlaying => _isPlaying.value;
@@ -58,7 +59,6 @@ class VideoUiStateController extends GetxController {
     });
   }
 
-
   void togglePlay() {
     if (_isPlaying.value) {
       player.pause();
@@ -96,6 +96,11 @@ class VideoUiStateController extends GetxController {
   //更新资源解析状态
   void updateParsingStatus(bool isParsing) {
     this.isParsing.value = isParsing;
+  }
+
+  ///显示获取隐藏控件ui
+  void showOrHideControlsUi() {
+    isShowControlsUi.value = !isShowControlsUi.value;
   }
 
   @override
