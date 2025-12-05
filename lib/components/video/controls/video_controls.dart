@@ -2,6 +2,7 @@ import 'package:anime_flow/controllers/play/PlayPageController.dart';
 import 'package:anime_flow/controllers/video/video_state_controller.dart';
 import 'package:anime_flow/models/hot_item.dart';
 import 'package:anime_flow/controllers/video/video_ui_state_controller.dart';
+import 'package:anime_flow/utils/timeUtil.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -50,8 +51,8 @@ class _VideoControlsUiState extends State<VideoControlsUi> {
             curve: Curves.easeInOut,
             child: videoUiStateController.isShowControlsUi.value
                 ? Container(
-                    padding:
-                        EdgeInsets.only(top: MediaQuery.of(context).padding.top),
+                    padding: EdgeInsets.only(
+                        top: MediaQuery.of(context).padding.top),
                     decoration: BoxDecoration(
                         gradient: LinearGradient(
                             colors: [Colors.black45, Colors.transparent],
@@ -76,7 +77,8 @@ class _VideoControlsUiState extends State<VideoControlsUi> {
                               Column(
                                 children: [
                                   Text(
-                                    widget.subject.nameCN ?? widget.subject.name,
+                                    widget.subject.nameCN ??
+                                        widget.subject.name,
                                     style: TextStyle(
                                         color: Colors.white70,
                                         fontSize: 20,
@@ -135,10 +137,26 @@ class _VideoControlsUiState extends State<VideoControlsUi> {
             onTap: () {
               videoUiStateController.showOrHideControlsUi();
             },
+            onHorizontalDragStart: (details) {
+              videoUiStateController
+                  .startHorizontalDrag(details.globalPosition.dx);
+            },
+            onHorizontalDragUpdate: (details) {
+              videoUiStateController.updateHorizontalDrag(
+                details.globalPosition.dx,
+                MediaQuery.of(context).size.width,
+              );
+            },
+            onHorizontalDragEnd: (details) {
+              videoUiStateController.endHorizontalDrag();
+            },
+            onHorizontalDragCancel: () {
+              videoUiStateController.cancelHorizontalDrag();
+            },
             child: Container(
               height: double.infinity,
               width: double.infinity,
-              color: Colors.white24,
+              color: Colors.transparent,
               child: Stack(
                 alignment: Alignment.center,
                 children: [
@@ -181,6 +199,26 @@ class _VideoControlsUiState extends State<VideoControlsUi> {
                         )
                       : SizedBox.shrink()),
 
+                  // 水平拖动进度提示
+                  Obx(() => videoUiStateController.isHorizontalDragging.value
+                      ? Container(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 20, vertical: 12),
+                          decoration: BoxDecoration(
+                            color: Colors.black.withValues(alpha: 0.7),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Text(
+                            '${TimeUtil.formatDuration(videoUiStateController.dragPosition.value)} / ${TimeUtil.formatDuration(videoUiStateController.duration.value)}',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        )
+                      : SizedBox.shrink()),
+
                   // 播放状态图标
                   PlayStatusIcon(videoUiStateController),
                 ],
@@ -195,10 +233,13 @@ class _VideoControlsUiState extends State<VideoControlsUi> {
             child: videoUiStateController.isShowControlsUi.value
                 ? Container(
                     decoration: BoxDecoration(
-                      gradient: LinearGradient(colors: [
-                        Colors.black38,
-                        Colors.transparent,
-                      ], begin: Alignment.bottomCenter, end: Alignment.topCenter),
+                      gradient: LinearGradient(
+                          colors: [
+                            Colors.black38,
+                            Colors.transparent,
+                          ],
+                          begin: Alignment.bottomCenter,
+                          end: Alignment.topCenter),
                     ),
                     child: Padding(
                       padding: EdgeInsets.all(3),
@@ -219,15 +260,16 @@ class _VideoControlsUiState extends State<VideoControlsUi> {
                               // 播放按钮
                               AnimatedSwitcher(
                                 duration: Duration(milliseconds: 300),
-                                transitionBuilder:
-                                    (Widget child, Animation<double> animation) {
+                                transitionBuilder: (Widget child,
+                                    Animation<double> animation) {
                                   return FadeTransition(
                                     opacity: animation,
                                     child: ScaleTransition(
                                       scale: animation,
                                       child: RotationTransition(
-                                        turns: Tween<double>(begin: 0.5, end: 1.0)
-                                            .animate(animation),
+                                        turns:
+                                            Tween<double>(begin: 0.5, end: 1.0)
+                                                .animate(animation),
                                         child: child,
                                       ),
                                     ),
@@ -237,20 +279,23 @@ class _VideoControlsUiState extends State<VideoControlsUi> {
                                     padding: EdgeInsets.all(0),
                                     key: ValueKey<bool>(
                                         videoUiStateController.isPlaying),
-                                    onPressed: videoUiStateController.togglePlay,
+                                    onPressed:
+                                        videoUiStateController.togglePlay,
                                     icon: Icon(
                                       videoUiStateController.isPlaying
                                           ? Icons.pause_rounded
                                           : Icons.play_arrow_rounded,
                                       size: 33,
-                                      color: Colors.white.withValues(alpha: 0.8),
+                                      color:
+                                          Colors.white.withValues(alpha: 0.8),
                                     ))),
                               ),
 
                               // 进度条
                               Expanded(
                                 child: VideoProgressBar(
-                                    videoUiStateController: videoUiStateController),
+                                    videoUiStateController:
+                                        videoUiStateController),
                               ),
 
                               // 全屏按钮
@@ -264,14 +309,14 @@ class _VideoControlsUiState extends State<VideoControlsUi> {
                                       ? Icon(
                                           size: 33,
                                           Icons.fullscreen_exit,
-                                          color:
-                                              Colors.white.withValues(alpha: 0.8),
+                                          color: Colors.white
+                                              .withValues(alpha: 0.8),
                                         )
                                       : Icon(
                                           size: 33,
                                           Icons.fullscreen,
-                                          color:
-                                              Colors.white.withValues(alpha: 0.8),
+                                          color: Colors.white
+                                              .withValues(alpha: 0.8),
                                         ),
                                 ),
                               ),

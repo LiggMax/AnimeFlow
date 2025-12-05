@@ -1,4 +1,5 @@
 import 'package:anime_flow/controllers/video/video_ui_state_controller.dart';
+import 'package:anime_flow/utils/timeUtil.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -56,11 +57,14 @@ class VideoProgressBar extends StatelessWidget {
                 value: value.clamp(0.0, max > 0 ? max : 1.0),
                 min: 0.0,
                 max: max > 0 ? max : 1.0,
+                // 进度条开始拖动
                 onChangeStart: (_) => videoUiStateController.startDrag(),
+                // 进度条正在拖动
                 onChanged: (v) {
                   videoUiStateController.position.value =
                       Duration(milliseconds: v.toInt());
                 },
+                // 进度条结束拖动
                 onChangeEnd: (v) =>
                     videoUiStateController.endDrag(Duration(milliseconds: v.toInt())),
               ),
@@ -105,18 +109,8 @@ class VideoTimeDisplay extends StatelessWidget {
       final position = videoController.position.value;
       final duration = videoController.duration.value;
 
-      String formatDuration(Duration d) {
-        String twoDigits(int n) => n.toString().padLeft(2, '0');
-        String twoDigitMinutes = twoDigits(d.inMinutes.remainder(60));
-        String twoDigitSeconds = twoDigits(d.inSeconds.remainder(60));
-        if (d.inHours > 0) {
-          return "${twoDigits(d.inHours)}:$twoDigitMinutes:$twoDigitSeconds";
-        }
-        return "$twoDigitMinutes:$twoDigitSeconds";
-      }
-
       return Text(
-        "${formatDuration(position)} / ${formatDuration(duration)}",
+        "${TimeUtil.formatDuration(position)} / ${TimeUtil.formatDuration(duration)}",
         style: TextStyle(
           color: Colors.white,
           fontSize: 12,

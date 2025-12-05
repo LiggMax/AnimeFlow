@@ -14,9 +14,15 @@ class VideoUiStateController extends GetxController {
   final RxBool showPlayStatusIcon = false.obs; // 是否显示播放状态图标
   final RxBool isParsing = false.obs; //是否正在解析视频资源
   final RxBool isShowControlsUi = true.obs; //是否显示控件ui
+  final RxBool isHorizontalDragging = false.obs; // 是否正在水平拖动
+  final Rx<Duration> dragPosition = Duration.zero.obs; // 拖动时的临时进度
 
   // 播放状态
   bool get isPlaying => _isPlaying.value;
+
+  // 拖动相关
+  double _dragStartX = 0;
+  Duration _dragStartPosition = Duration.zero;
 
   // 控制图标显示的计时器
   Timer? _iconTimer;
@@ -101,6 +107,53 @@ class VideoUiStateController extends GetxController {
   ///显示获取隐藏控件ui
   void showOrHideControlsUi() {
     isShowControlsUi.value = !isShowControlsUi.value;
+  }
+
+  // 开始水平拖动
+  void startHorizontalDrag(double startX) {
+    _dragStartX = startX;
+    _dragStartPosition = position.value;
+    isHorizontalDragging.value = true;
+    isDragging.value = true;
+  }
+
+  // 更新水平拖动进度
+  void updateHorizontalDrag(double currentX, double screenWidth) {
+    if (duration.value <= Duration.zero) return;
+
+    // 计算拖动距离
+    final dragDistance = currentX - _dragStartX;
+
+    // 根据屏幕宽度计算时间偏移（滑动整个屏幕宽度 = 总时长）
+    final timeOffset = (dragDistance / screenWidth) * duration.value.inMilliseconds;
+
+    // 计算新的播放位置
+    var newPosition = _dragStartPosition.inMilliseconds + timeOffset.toInt();
+
+    // 限制在有效范围内
+    newPosition = newPosition.clamp(0, duration.value.inMilliseconds);
+
+    dragPosition.value = Duration(milliseconds: newPosition);
+    position.value = dragPosition.value; // 实时更新位置显示
+  }
+
+  // 结束水平拖动
+  void endHorizontalDrag() {
+    if (isHorizontalDragging.value) {
+      seekTo(dragPosition.value);
+      isHorizontalDragging.value = false;
+      isDragging.value = false;
+    }
+  }
+
+  // 取消水平拖动
+  void cancelHorizontalDrag() {
+    if (isHorizontalDragging.value) {
+      isHorizontalDragging.value = false;
+      isDragging.value = false;
+      // 恢复到拖动开始前的位置
+      position.value = _dragStartPosition;
+    }
   }
 
   @override
