@@ -1,9 +1,9 @@
+import 'package:anime_flow/models/item/tab_item.dart';
 import 'package:flutter/material.dart';
 import 'package:anime_flow/pages/Category/index.dart';
 import 'package:anime_flow/pages/recommend/index.dart';
 import 'package:anime_flow/pages/play/index.dart';
 
-import '../../models/tab_item.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});

@@ -4,7 +4,7 @@ import 'package:anime_flow/utils/layout_util.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:anime_flow/controllers/theme_controller.dart';
-import 'package:anime_flow/models/hot_item.dart';
+import 'package:anime_flow/models/item/hot_item.dart';
 
 class RecommendView extends StatefulWidget {
   const RecommendView({super.key});

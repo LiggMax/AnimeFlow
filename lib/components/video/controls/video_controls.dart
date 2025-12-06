@@ -2,7 +2,7 @@ import 'package:anime_flow/components/video/controls/desktop_gesture_detector.da
 import 'package:anime_flow/controllers/play/PlayPageController.dart';
 import 'package:anime_flow/controllers/video/video_state_controller.dart';
 import 'package:anime_flow/models/enums/video_controls_icon_type.dart';
-import 'package:anime_flow/models/hot_item.dart';
+import 'package:anime_flow/models/item/hot_item.dart';
 import 'package:anime_flow/controllers/video/video_ui_state_controller.dart';
 import 'package:anime_flow/utils/timeUtil.dart';
 import 'package:flutter/material.dart';

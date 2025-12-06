@@ -2,8 +2,8 @@ import 'dart:async';
 import 'dart:math';
 import 'package:anime_flow/data/crawler/html_crawler.dart';
 import 'package:anime_flow/http/api/common_api.dart';
-import 'package:anime_flow/models/video/episode_resources_item.dart';
-import 'package:anime_flow/models/video/search_resources_item.dart';
+import 'package:anime_flow/models/item/video/episode_resources_item.dart';
+import 'package:anime_flow/models/item/video/search_resources_item.dart';
 import 'package:anime_flow/utils/getConfigFlie.dart';
 import 'package:anime_flow/utils/http/dio_request.dart';
 import 'package:dio/dio.dart';
@@ -29,7 +29,7 @@ class WebRequest {
     return HtmlCrawler.parseSearchHtml(response.data);
   }
 
-  ///获取资源列表
+  ///获取剧集资源列表
   static Future<List<EpisodeResourcesItem>> getResourcesListService(
       String link) async {
     final config = await GetConfigFile.loadPluginConfig();

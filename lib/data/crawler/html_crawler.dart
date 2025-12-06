@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:anime_flow/models/video/episode_resources_item.dart';
-import 'package:anime_flow/models/video/search_resources_item.dart';
+import 'package:anime_flow/models/item/video/episode_resources_item.dart';
+import 'package:anime_flow/models/item/video/search_resources_item.dart';
 import 'package:anime_flow/utils/getConfigFlie.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:html/parser.dart';
@@ -66,15 +66,14 @@ class HtmlCrawler {
 
       // 提取当前线路的所有剧集
       List<Episode> episodes = [];
-      for (var episodeNode in currentEpisodesElement.nodes) {
-        String episodeName = episodeNode.text?.trim() ?? '';
-        RegExp numberRegex = RegExp(r'\d+');
-        RegExpMatch? match = numberRegex.firstMatch(episodeName);
-        String? episodeNumberStr = match!.group(0);
+      for (int j = 0; j < currentEpisodesElement.nodes.length; j++) {
+        var episodeNode = currentEpisodesElement.nodes[j];
+        String episodeStr = (j + 1).toString();
+        String episodeLike = episodeNode.attributes['href'] ?? '';
 
         Episode episodeObj = Episode(
-          episodeSort: episodeNumberStr!,
-          like: episodeNode.attributes['href'] ?? '',
+          episodeSort: episodeStr,
+          like: episodeLike,
         );
         episodes.add(episodeObj);
       }
@@ -130,7 +129,7 @@ class HtmlCrawler {
                 if (enableNestedUrl) {
                   final nestedUrlRegex = RegExp(matchNestedUrl);
                   final nestedUrlMatches =
-                  nestedUrlRegex.allMatches(foundVideoUrl!);
+                      nestedUrlRegex.allMatches(foundVideoUrl!);
                   logger.i("原链接: $foundVideoUrl");
                   final realVideoUrl = nestedUrlMatches.first.group(0);
                   completer.complete(realVideoUrl);

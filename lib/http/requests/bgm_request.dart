@@ -1,8 +1,8 @@
 import 'package:anime_flow/http/api/bgm_api.dart';
 import 'package:anime_flow/http/api/common_api.dart';
-import 'package:anime_flow/models/episodes_item.dart';
-import 'package:anime_flow/models/hot_item.dart';
-import 'package:anime_flow/models/subjects_item.dart';
+import 'package:anime_flow/models/item/episodes_item.dart';
+import 'package:anime_flow/models/item/hot_item.dart';
+import 'package:anime_flow/models/item/subjects_item.dart';
 import 'package:anime_flow/utils/http/dio_request.dart';
 import 'package:dio/dio.dart';
 

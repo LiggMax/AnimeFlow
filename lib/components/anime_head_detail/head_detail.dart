@@ -1,10 +1,9 @@
 import 'dart:ui';
 
 import 'package:anime_flow/components/image/animation_network_image.dart';
-import 'package:anime_flow/models/episodes_item.dart';
-import 'package:anime_flow/models/hot_item.dart';
-import 'package:anime_flow/models/subjects_item.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:anime_flow/models/item/episodes_item.dart';
+import 'package:anime_flow/models/item/hot_item.dart';
+import 'package:anime_flow/models/item/subjects_item.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 

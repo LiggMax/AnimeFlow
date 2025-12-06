@@ -1,8 +1,8 @@
 import 'package:anime_flow/components/anime_head_detail/head_detail.dart';
 import 'package:anime_flow/http/requests/bgm_request.dart';
-import 'package:anime_flow/models/episodes_item.dart';
-import 'package:anime_flow/models/hot_item.dart';
-import 'package:anime_flow/models/subjects_item.dart';
+import 'package:anime_flow/models/item/episodes_item.dart';
+import 'package:anime_flow/models/item/hot_item.dart';
+import 'package:anime_flow/models/item/subjects_item.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
