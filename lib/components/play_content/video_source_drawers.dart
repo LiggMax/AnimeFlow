@@ -92,6 +92,12 @@ class _VideoSourceDrawersState extends State<VideoSourceDrawers> {
                             episodesController.episodeIndex.value,
                       );
 
+                      final excludedEpisodesCount = widget.episodesList
+                          .expand((item) => item.episodes.where((ep) =>
+                              ep.episodeSort !=
+                              episodesController.episodeIndex.value))
+                          .length;
+
                       // 如果当前资源组没有匹配的剧集，不渲染
                       if (currentEpisode == null) {
                         return SizedBox.shrink();
@@ -110,7 +116,7 @@ class _VideoSourceDrawersState extends State<VideoSourceDrawers> {
                                 mainAxisAlignment: MainAxisAlignment.end,
                                 children: [
                                   Text(
-                                    '显示已被排除的资源',
+                                    '显示已被排除的资源($excludedEpisodesCount)',
                                     style: TextStyle(fontSize: 14),
                                   ),
                                   SizedBox(width: 8),
@@ -128,17 +134,16 @@ class _VideoSourceDrawersState extends State<VideoSourceDrawers> {
                             if (isShowEpisodes)
                               ...widget.episodesList.expand((item) {
                                 // 获取该资源的所有非当前集数的剧集
-                                final otherEpisodes = item.episodes
+                                final excludedEpisodes = item.episodes
                                     .where(
                                       (ep) =>
                                           ep.episodeSort !=
                                           episodesController.episodeIndex.value,
                                     )
                                     .toList();
-
                                 // 遍历所有其他剧集
-                                return otherEpisodes.map((otherEpisode) =>
-                                    _buildVideoSource(otherEpisode, item));
+                                return excludedEpisodes.map((excludedEpisode) =>
+                                    _buildVideoSource(excludedEpisode, item));
                               }),
                           ],
                         ],
