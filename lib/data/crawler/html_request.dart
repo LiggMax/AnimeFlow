@@ -30,7 +30,7 @@ class WebRequest {
   }
 
   ///获取剧集资源列表
-  static Future<List<EpisodeResourcesItem>> getResourcesListService(
+  static Future<List<CrawlerEpisodeResourcesItem>> getResourcesListService(
       String link) async {
     final config = await GetConfigFile.loadPluginConfig();
     final String baseURL = config['baseURL'];

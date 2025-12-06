@@ -83,7 +83,7 @@ class _VideoSourceDrawersState extends State<VideoSourceDrawers> {
                                           episode.like);
 
                                   // 更新视频源到控制器
-                                  videoSourceController.setVideoRul(videoUrl);
+                                  videoSourceController.setVideoUrl(videoUrl);
 
                                   // 显示成功提示
                                   Get.snackbar(

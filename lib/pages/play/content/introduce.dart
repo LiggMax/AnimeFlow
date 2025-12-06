@@ -2,11 +2,9 @@ import 'package:anime_flow/components/play_content/video_source_drawers.dart';
 import 'package:anime_flow/constants/play_layout_constant.dart';
 import 'package:anime_flow/controllers/play/PlayPageController.dart';
 import 'package:anime_flow/controllers/video/video_source_controller.dart';
-import 'package:anime_flow/data/crawler/html_request.dart';
 import 'package:anime_flow/models/item/episodes_item.dart';
 import 'package:anime_flow/models/item/hot_item.dart';
 import 'package:anime_flow/models/item/video/episode_resources_item.dart';
-import 'package:anime_flow/models/item/video/search_resources_item.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:logger/logger.dart';
@@ -28,8 +26,7 @@ class _IntroduceViewState extends State<IntroduceView>
   late VideoSourceController videoResourcesController;
   Worker? _screenWorker; // 屏幕宽高监听器
   bool isVideoSource = true;
-  late List<SearchResourcesItem> _searchList;
-  late List<EpisodeResourcesItem> _episodesList;
+  late List<EpisodeResourcesItem> episodeResources;
 
   // 保持页面状态，防止切换Tab时重新加载
   @override
@@ -40,8 +37,8 @@ class _IntroduceViewState extends State<IntroduceView>
     super.initState();
     playPageController = Get.find<PlayPageController>();
     videoResourcesController = Get.find<VideoSourceController>();
-    getVideoResources();
 
+    getVideoResources();
     // 初始化监听器
     _screenWorker = ever(playPageController.isWideScreen, (isWide) {
       // 如果有任何弹窗打开（BottomSheet 或 GeneralDialog），则关闭
@@ -62,24 +59,24 @@ class _IntroduceViewState extends State<IntroduceView>
   }
 
   void getVideoResources() async {
-    List<SearchResourcesItem> searchList =
-        await WebRequest.getSearchSubjectListService(
-      widget.subject.nameCN ?? widget.subject.name,
-    );
-    List<EpisodeResourcesItem> allEpisodesList = [];
-    for (var value in searchList) {
-      var list = await WebRequest.getResourcesListService(value.link);
-      allEpisodesList.addAll(list);
+    try {
+      final resources = await videoResourcesController
+          .getVideoResources(widget.subject.nameCN ?? widget.subject.name);
+
+      if (mounted) {
+        setState(() {
+          episodeResources = resources;
+          isVideoSource = false;
+        });
+      }
+    } catch (e) {
+      // 处理错误情况
+      if (mounted) {
+        setState(() {
+          isVideoSource = false;
+        });
+      }
     }
-
-    setState(() {
-      _episodesList = allEpisodesList;
-      isVideoSource = false;
-    });
-    // String videoRul = await WebRequest.getVideoSourceService(
-    //     episodesList[0].episodes[0].like);
-
-    videoResourcesController.setVideoRul("videoRul");
   }
 
   @override
@@ -93,7 +90,7 @@ class _IntroduceViewState extends State<IntroduceView>
   Widget build(BuildContext context) {
     // 必须调用 super.build 来启用 AutomaticKeepAliveClientMixin
     super.build(context);
-    
+
     return Padding(
         padding: EdgeInsets.all(10),
         child: SingleChildScrollView(
@@ -177,7 +174,7 @@ class _IntroduceViewState extends State<IntroduceView>
                                     pageBuilder: (context, animation,
                                         secondaryAnimation) {
                                       return VideoSourceDrawers(
-                                          "数据源", _episodesList);
+                                          "数据源", episodeResources);
                                     });
                               },
                               child: Row(

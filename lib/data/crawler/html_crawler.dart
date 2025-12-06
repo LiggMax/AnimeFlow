@@ -38,7 +38,7 @@ class HtmlCrawler {
   }
 
   ///解析html资源页面
-  static Future<List<EpisodeResourcesItem>> parseResourcesHtml(
+  static Future<List<CrawlerEpisodeResourcesItem>> parseResourcesHtml(
       String resourcesHtml) async {
     final config = await GetConfigFile.loadPluginConfig();
     final String lineNames = config['lineNames'];
@@ -50,7 +50,7 @@ class HtmlCrawler {
     final lineNamesElement = parser.queryXPath(lineNames);
     final lineListElement = parser.queryXPath(lineList);
 
-    List<EpisodeResourcesItem> episodeResourcesList = [];
+    List<CrawlerEpisodeResourcesItem> episodeResourcesList = [];
 
     // 根据lineListElement长度循环（每个线路）
     for (int i = 0; i < lineListElement.nodes.length; i++) {
@@ -79,7 +79,7 @@ class HtmlCrawler {
       }
 
       // 创建EpisodeResources对象
-      EpisodeResourcesItem episodeResource = EpisodeResourcesItem(
+      CrawlerEpisodeResourcesItem episodeResource = CrawlerEpisodeResourcesItem(
         lineNames: lineName,
         episodes: episodes,
       );
