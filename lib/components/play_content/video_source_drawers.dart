@@ -2,7 +2,7 @@ import 'package:anime_flow/constants/play_layout_constant.dart';
 import 'package:anime_flow/controllers/video/video_source_controller.dart';
 import 'package:anime_flow/controllers/video/video_state_controller.dart';
 import 'package:anime_flow/data/crawler/html_request.dart';
-import 'package:anime_flow/models/void/episode_resources_item.dart';
+import 'package:anime_flow/models/video/episode_resources_item.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:logger/logger.dart';

@@ -24,7 +24,7 @@ class VideoStateController extends GetxController {
     });
   }
 
-  ///暂停或播放
+  ///暂停|播放
   void playOrPauseVideo() {
     player.playOrPause();
   }

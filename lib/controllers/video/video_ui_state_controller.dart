@@ -104,11 +104,20 @@ class VideoUiStateController extends GetxController {
     this.isParsing.value = isParsing;
   }
 
-  ///显示获取隐藏控件ui
+  ///显示获|隐藏控件ui
   void showOrHideControlsUi() {
     isShowControlsUi.value = !isShowControlsUi.value;
   }
 
+  ///显示ui
+  void showControlsUi() {
+    isShowControlsUi.value = true;
+  }
+
+  ///隐藏ui
+  void hideControlsUi() {
+    isShowControlsUi.value = false;
+  }
   // 开始水平拖动
   void startHorizontalDrag(double startX) {
     _dragStartX = startX;

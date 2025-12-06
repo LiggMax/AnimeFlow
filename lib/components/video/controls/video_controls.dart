@@ -1,4 +1,4 @@
-import 'package:anime_flow/components/video/controls/control_gesture_detector.dart';
+import 'package:anime_flow/components/video/controls/desktop_gesture_detector.dart';
 import 'package:anime_flow/controllers/play/PlayPageController.dart';
 import 'package:anime_flow/controllers/video/video_state_controller.dart';
 import 'package:anime_flow/models/hot_item.dart';
@@ -11,6 +11,8 @@ import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 import 'package:anime_flow/components/video/controls/video_ui_components.dart';
 import 'package:anime_flow/utils/platform_util.dart';
+
+import 'mobile_gesture_detector.dart';
 
 ///播放器控件
 class VideoControlsUi extends StatefulWidget {
@@ -131,119 +133,11 @@ class _VideoControlsUiState extends State<VideoControlsUi> {
 
       ///中间占满剩余区域
       Expanded(
-        child: ControlGestureDetector(
-            child: Container(
-          height: double.infinity,
-          width: double.infinity,
-          color: Colors.transparent,
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              //解析动画
-              Obx(() => videoUiStateController.isParsing.value
-                  ? Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        CircularProgressIndicator(
-                          color: Theme.of(context).primaryColor,
-                        ),
-                        SizedBox(height: 10),
-                        Text(
-                          '视频资源解析中...',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 14,
-                          ),
-                        ),
-                      ],
-                    )
-                  : SizedBox.shrink()),
-              // 缓冲动画
-              Obx(() => videoUiStateController.isBuffering.value
-                  ? Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        CircularProgressIndicator(
-                          color: Theme.of(context).primaryColor,
-                        ),
-                        SizedBox(height: 5),
-                        Text(
-                          '缓冲中...',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 14,
-                          ),
-                        ),
-                      ],
-                    )
-                  : SizedBox.shrink()),
-
-              // 水平拖动进度提示
-              Obx(() => videoUiStateController.isHorizontalDragging.value
-                  ? Container(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                      decoration: BoxDecoration(
-                        color: Colors.black.withValues(alpha: 0.7),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Text(
-                        '${TimeUtil.formatDuration(videoUiStateController.dragPosition.value)} / ${TimeUtil.formatDuration(videoUiStateController.duration.value)}',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    )
-                  : SizedBox.shrink()),
-
-              // 音量指示器
-              Obx(() => videoStateController.showVolumeIndicator.value
-                  ? Positioned(
-                      // 垂直拖动时显示在右侧，滚轮时显示在左侧
-                      right: videoStateController.isVerticalDragging.value ? 20 : null,
-                      left: videoStateController.isVerticalDragging.value ? null : 20,
-                      child: Container(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                        decoration: BoxDecoration(
-                          color: Colors.black.withValues(alpha: 0.7),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              videoStateController.volume.value == 0
-                                  ? Icons.volume_off
-                                  : videoStateController.volume.value < 50
-                                      ? Icons.volume_down
-                                      : Icons.volume_up,
-                              color: Colors.white,
-                              size: 24,
-                            ),
-                            SizedBox(width: 12),
-                            Text(
-                              '${videoStateController.volume.value.toInt()}%',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    )
-                  : SizedBox.shrink()),
-
-              // 播放状态图标
-              PlayStatusIcon(videoUiStateController),
-            ],
-          ),
-        )),
-      ),
+          child: PlatformUtil.isMobile
+              //移动端手势
+              ? MobileGestureDetector(child: buildMiddleArea())
+              //PC端手势
+              : ControlGestureDetector(child: buildMiddleArea())),
 
       ///底部
       Obx(() => AnimatedSize(
@@ -348,5 +242,120 @@ class _VideoControlsUiState extends State<VideoControlsUi> {
                 : SizedBox.shrink(),
           ))
     ]);
+  }
+
+  //中间区域组件
+  Widget buildMiddleArea() {
+    return Container(
+      height: double.infinity,
+      width: double.infinity,
+      color: Colors.transparent,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          //解析动画
+          Obx(() => videoUiStateController.isParsing.value
+              ? Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    CircularProgressIndicator(
+                      color: Theme.of(context).primaryColor,
+                    ),
+                    SizedBox(height: 10),
+                    Text(
+                      '视频资源解析中...',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ],
+                )
+              : SizedBox.shrink()),
+          // 缓冲动画
+          Obx(() => videoUiStateController.isBuffering.value
+              ? Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    CircularProgressIndicator(
+                      color: Theme.of(context).primaryColor,
+                    ),
+                    SizedBox(height: 5),
+                    Text(
+                      '缓冲中...',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ],
+                )
+              : SizedBox.shrink()),
+
+          // 水平拖动进度提示
+          Obx(() => videoUiStateController.isHorizontalDragging.value
+              ? Container(
+                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withValues(alpha: 0.7),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    '${TimeUtil.formatDuration(videoUiStateController.dragPosition.value)} / ${TimeUtil.formatDuration(videoUiStateController.duration.value)}',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                )
+              : SizedBox.shrink()),
+
+          // 音量指示器
+          Obx(() => videoStateController.showVolumeIndicator.value
+              ? Positioned(
+                  // 垂直拖动时显示在右侧，滚轮时显示在左侧
+                  right:
+                      videoStateController.isVerticalDragging.value ? 20 : null,
+                  left:
+                      videoStateController.isVerticalDragging.value ? null : 20,
+                  child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    decoration: BoxDecoration(
+                      color: Colors.black.withValues(alpha: 0.7),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          videoStateController.volume.value == 0
+                              ? Icons.volume_off
+                              : videoStateController.volume.value < 50
+                                  ? Icons.volume_down
+                                  : Icons.volume_up,
+                          color: Colors.white,
+                          size: 24,
+                        ),
+                        SizedBox(width: 12),
+                        Text(
+                          '${videoStateController.volume.value.toInt()}%',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+              : SizedBox.shrink()),
+
+          // 播放状态图标
+          PlayStatusIcon(videoUiStateController),
+        ],
+      ),
+    );
   }
 }

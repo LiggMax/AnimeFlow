@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:anime_flow/models/void/episode_resources_item.dart';
-import 'package:anime_flow/models/void/search_resources_item.dart';
+import 'package:anime_flow/models/video/episode_resources_item.dart';
+import 'package:anime_flow/models/video/search_resources_item.dart';
 import 'package:anime_flow/utils/getConfigFlie.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:html/parser.dart';
