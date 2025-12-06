@@ -48,7 +48,7 @@ class _AnimeDetailPageState extends State<AnimeDetailPage>
     const double tabBarHeight = 46.0;
 
     return Scaffold(
-      // 关键设置：让 Body 内容延伸到 AppBar 后方
+      // 让 Body 内容延伸到 AppBar 后方
       extendBodyBehindAppBar: true,
       body: NotificationListener<ScrollNotification>(
         onNotification: (notification) {

@@ -1,4 +1,6 @@
+import 'package:anime_flow/components/image/animation_network_image.dart';
 import 'package:anime_flow/http/requests/bgm_request.dart';
+import 'package:anime_flow/utils/layout_util.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:anime_flow/controllers/theme_controller.dart';
@@ -73,7 +75,7 @@ class _RecommendViewState extends State<RecommendView> {
               controller: _scrollController,
               padding: const EdgeInsets.all(10),
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: getCrossAxisCount(constraints),
+                crossAxisCount: LayoutUtil.getCrossAxisCount(constraints),
                 crossAxisSpacing: 5, // 横向间距
                 mainAxisSpacing: 5, // 纵向间距
                 childAspectRatio: 0.7, // 宽高比
@@ -104,15 +106,14 @@ class _RecommendViewState extends State<RecommendView> {
                     child: Stack(
                       children: [
                         Positioned(
-                          top: 0,
-                          left: 0,
-                          bottom: 0,
-                          right: 0,
-                          child: Image.network(
-                            dataItem.images.large,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
+                            top: 0,
+                            left: 0,
+                            bottom: 0,
+                            right: 0,
+                            child: AnimationNetworkImage(
+                              url: dataItem.images.large,
+                              fit: BoxFit.cover,
+                            )),
                         Positioned(
                           bottom: 0,
                           left: 0,
@@ -153,21 +154,6 @@ class _RecommendViewState extends State<RecommendView> {
         );
       },
     );
-  }
-
-  int getCrossAxisCount(BoxConstraints constraints) {
-    double screenWidth = constraints.maxWidth;
-    if (screenWidth > 1200) {
-      return 6; // 大屏幕
-    } else if (screenWidth > 900) {
-      return 5; // 中大屏幕
-    } else if (screenWidth > 600) {
-      return 4; // 平板
-    } else if (screenWidth > 400) {
-      return 3; // 较大手机屏
-    } else {
-      return 3; // 较小手机屏
-    }
   }
 
   @override

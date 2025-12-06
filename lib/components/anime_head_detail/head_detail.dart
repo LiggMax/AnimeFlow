@@ -1,8 +1,10 @@
 import 'dart:ui';
 
+import 'package:anime_flow/components/image/animation_network_image.dart';
 import 'package:anime_flow/models/episodes_item.dart';
 import 'package:anime_flow/models/hot_item.dart';
 import 'package:anime_flow/models/subjects_item.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -48,8 +50,8 @@ class HeadDetail extends StatelessWidget {
                           stops: [0.8, 1],
                         ).createShader(bounds);
                       },
-                      child: Image.network(
-                        subject.images.large,
+                      child: AnimationNetworkImage(
+                        url: subject.images.large,
                         width: boxConstraints.maxWidth,
                         height: boxConstraints.maxHeight,
                         fit: BoxFit.cover,
@@ -83,8 +85,8 @@ class HeadDetail extends StatelessWidget {
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(8.0),
                       ),
-                      child: Image.network(
-                        subject.images.large,
+                      child: AnimationNetworkImage(
+                        url: subject.images.large,
                         fit: BoxFit.cover,
                       ),
                     ),
