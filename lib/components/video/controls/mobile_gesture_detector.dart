@@ -1,6 +1,7 @@
 import 'package:anime_flow/controllers/video/video_state_controller.dart';
 import 'package:anime_flow/controllers/video/video_ui_state_controller.dart';
 import 'package:anime_flow/models/enums/drag_type.dart';
+import 'package:anime_flow/models/enums/video_controls_icon_type.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_instance/src/extension_instance.dart';
@@ -12,16 +13,16 @@ class MobileGestureDetector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    double dragStartX = 0; // 拖动开始时的X坐标
+    double dragStartY = 0; // 拖动开始时的Y坐标
+    bool isRightSide = false; // 是否在屏幕右半侧开始拖动
+    DragType? dragType; // 拖动类型：'horizontal'(水平) 或 'vertical'(垂直)
     final videoStateController = Get.find<VideoStateController>();
     final videoUiStateController = Get.find<VideoUiStateController>();
 
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
-    double dragStartX = 0; // 拖动开始时的X坐标
-    double dragStartY = 0; // 拖动开始时的Y坐标
-    bool isRightSide = false; // 是否在屏幕右半侧开始拖动
-    DragType? dragType; // 拖动类型：'horizontal'(水平) 或 'vertical'(垂直)
     return GestureDetector(
       //单击事件
       onTap: () {
@@ -33,6 +34,9 @@ class MobileGestureDetector extends StatelessWidget {
       //双击事件
       onDoubleTap: () {
         videoStateController.playOrPauseVideo();
+        videoUiStateController.updateIndicatorType(
+            VideoControlsIndicatorType.playStatusIndicator);
+        videoUiStateController.showIndicator();
       },
 
       // 拖动开始事件：记录起始位置并判断屏幕区域
@@ -69,6 +73,9 @@ class MobileGestureDetector extends StatelessWidget {
               // 且在右半屏 → 垂直拖动（调整音量）
               dragType = DragType.vertical;
               videoStateController.startVerticalDrag();
+              videoUiStateController.updateIndicatorType(
+                  VideoControlsIndicatorType.volumeIndicator);
+              videoUiStateController.showIndicator();
             }
             // TODO 左半屏的垂直拖动,调整亮度
           }

@@ -80,6 +80,7 @@ class HeadDetail extends StatelessWidget {
                   child: AspectRatio(
                     aspectRatio: 2 / 3,
                     child: Container(
+                      margin: const EdgeInsets.only(left: 6),
                       clipBehavior: Clip.hardEdge,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(8.0),

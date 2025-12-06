@@ -153,9 +153,11 @@ class _IntroduceViewState extends State<IntroduceView>
                               style: TextStyle(
                                   fontSize: 20, fontWeight: FontWeight.bold),
                             ),
-                            Obx(() => episodesController.episodeTitle.value != ''
+                            Obx(() => episodesController.episodeTitle.value !=
+                                    ''
                                 ? Text(episodesController.episodeTitle.value,
-                                    maxLines: 3, overflow: TextOverflow.ellipsis)
+                                    maxLines: 3,
+                                    overflow: TextOverflow.ellipsis)
                                 : SizedBox.shrink()),
                           ],
                         ),
@@ -167,46 +169,42 @@ class _IntroduceViewState extends State<IntroduceView>
                               height: 20,
                               child: CircularProgressIndicator(),
                             )
-                          : SizedBox(
-                              width: 110,
-                              child: OutlinedButton.icon(
-                                onPressed: () {
-                                  Get.generalDialog(
-                                      barrierDismissible: true,
-                                      barrierLabel: "SourceDrawer",
-                                      barrierColor: Colors.black54,
-                                      transitionDuration:
-                                          const Duration(milliseconds: 300),
-                                      // 动画
-                                      transitionBuilder: (context, animation,
-                                          secondaryAnimation, child) {
-                                        return SlideTransition(
-                                          position: Tween<Offset>(
-                                            begin: const Offset(1, 0),
-                                            end: Offset.zero,
-                                          ).animate(CurvedAnimation(
-                                            parent: animation,
-                                            curve: Curves.easeOut,
-                                          )),
-                                          child: child,
-                                        );
-                                      },
-                                      pageBuilder: (context, animation,
-                                          secondaryAnimation) {
-                                        return VideoSourceDrawers(
-                                            sourceTitle, episodeResources);
-                                      });
-                                },
-                                style: OutlinedButton.styleFrom(
-                                  side: BorderSide(
-                                    color:
-                                        Theme.of(context).colorScheme.primary,
-                                  ),
+                          : OutlinedButton.icon(
+                              onPressed: () {
+                                Get.generalDialog(
+                                    barrierDismissible: true,
+                                    barrierLabel: "SourceDrawer",
+                                    barrierColor: Colors.black54,
+                                    transitionDuration:
+                                        const Duration(milliseconds: 300),
+                                    // 动画
+                                    transitionBuilder: (context, animation,
+                                        secondaryAnimation, child) {
+                                      return SlideTransition(
+                                        position: Tween<Offset>(
+                                          begin: const Offset(1, 0),
+                                          end: Offset.zero,
+                                        ).animate(CurvedAnimation(
+                                          parent: animation,
+                                          curve: Curves.easeOut,
+                                        )),
+                                        child: child,
+                                      );
+                                    },
+                                    pageBuilder: (context, animation,
+                                        secondaryAnimation) {
+                                      return VideoSourceDrawers(
+                                          sourceTitle, episodeResources);
+                                    });
+                              },
+                              style: OutlinedButton.styleFrom(
+                                side: BorderSide(
+                                  color: Theme.of(context).colorScheme.primary,
                                 ),
-                                icon: Icon(Icons.sync_alt_rounded),
-                                label: const Text("切换源"),
                               ),
-                            )
+                              icon: Icon(Icons.sync_alt_rounded),
+                              label: const Text("切换源"),
+                            ),
                     ],
                   ),
                 ),

@@ -6,7 +6,6 @@ class VideoStateController extends GetxController {
   final RxBool playing = false.obs; //视频播放状态
   final Rx<Duration> position = Duration.zero.obs;
   final RxDouble volume = 100.0.obs; //音量 0-100
-  final RxBool showVolumeIndicator = false.obs; //是否显示音量指示器
   final RxBool isVerticalDragging = false.obs; //是否正在垂直拖动调整音量
 
   // 垂直拖动相关
@@ -42,17 +41,16 @@ class VideoStateController extends GetxController {
     );
   }
 
-  ///更新视频音量
-  void updateVolume(double volume) {
-    double newVolume = (this.volume.value + volume).clamp(0.0, 100.0);
-    player.setVolume(newVolume);
+  ///设置视频音量（绝对值）
+  void setVolume(double newVolume) {
+    double clampedVolume = newVolume.clamp(0.0, 100.0);
+    player.setVolume(clampedVolume);
   }
 
   // 开始垂直拖动调整音量
   void startVerticalDrag() {
     _dragStartVolume = volume.value;
     isVerticalDragging.value = true;
-    showVolumeIndicator.value = true;
   }
 
   // 更新垂直拖动音量
@@ -60,8 +58,8 @@ class VideoStateController extends GetxController {
     // 向上滑动增加音量，向下滑动减少音量
     // 滑动整个屏幕高度改变100%音量
     final volumeChange = -(dragDistance / screenHeight) * 100;
-    double newVolume = (_dragStartVolume + volumeChange).clamp(0.0, 100.0);
-    updateVolume(newVolume);
+    double newVolume = _dragStartVolume + volumeChange;
+    setVolume(newVolume);
   }
 
   // 结束垂直拖动
@@ -70,7 +68,6 @@ class VideoStateController extends GetxController {
     // 2秒后隐藏音量指示器
     Future.delayed(const Duration(seconds: 2), () {
       if (!isVerticalDragging.value) {
-        showVolumeIndicator.value = false;
       }
     });
   }
