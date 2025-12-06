@@ -1,4 +1,5 @@
 import 'package:anime_flow/constants/play_layout_constant.dart';
+import 'package:anime_flow/controllers/episodes/episodes_controller.dart';
 import 'package:anime_flow/controllers/video/video_source_controller.dart';
 import 'package:anime_flow/controllers/video/video_state_controller.dart';
 import 'package:anime_flow/data/crawler/html_request.dart';
@@ -20,13 +21,22 @@ class VideoSourceDrawers extends StatefulWidget {
 class _VideoSourceDrawersState extends State<VideoSourceDrawers> {
   late VideoSourceController videoSourceController;
   late VideoStateController videoStateController;
+  late EpisodesController episodesController;
   final logger = Logger();
+  bool isShowEpisodes = false;
 
   @override
   void initState() {
     super.initState();
     videoStateController = Get.find<VideoStateController>();
     videoSourceController = Get.find<VideoSourceController>();
+    episodesController = Get.find<EpisodesController>();
+  }
+
+  void setShowEpisodes() {
+    setState(() {
+      isShowEpisodes = !isShowEpisodes;
+    });
   }
 
   @override
@@ -70,103 +80,160 @@ class _VideoSourceDrawersState extends State<VideoSourceDrawers> {
                   itemCount: widget.episodesList.length,
                   itemBuilder: (context, index) {
                     final resourceItem = widget.episodesList[index];
-                    return Column(
-                      children: resourceItem.episodes.map((episode) {
-                        return Card.filled(
-                            margin: EdgeInsets.only(bottom: 8),
-                            child: InkWell(
-                              onTap: () async {
-                                try {
-                                  Get.back();
+                    final isLastItem = index == widget.episodesList.length - 1;
 
-                                  // 清理播放资源
-                                  videoStateController.disposeVideo();
-                                  // 异步获取视频源
-                                  final videoUrl =
-                                      await WebRequest.getVideoSourceService(
-                                          episode.like);
+                    // 使用 Obx 包裹每个列表项，监听 episodeIndex 变化
+                    return Obx(() {
+                      // 当前选中剧集对应的剧集数据
+                      final currentEpisode =
+                          resourceItem.episodes.firstWhereOrNull(
+                        (ep) =>
+                            ep.episodeSort ==
+                            episodesController.episodeIndex.value,
+                      );
 
-                                  // 更新视频源到控制器
-                                  videoSourceController.setVideoUrl(videoUrl);
+                      // 如果当前资源组没有匹配的剧集，不渲染
+                      if (currentEpisode == null) {
+                        return SizedBox.shrink();
+                      }
 
-                                  // 显示成功提示
-                                  Get.snackbar(
-                                    '视频资源解析成功',
-                                    '',
-                                    duration: Duration(seconds: 2),
-                                    maxWidth: 300,
-                                  );
-                                } catch (e) {
-                                  logger.e('获取视频源失败: $e');
+                      // 只渲染当前选中的剧集
+                      return Column(
+                        children: [
+                          _buildVideoSource(currentEpisode, resourceItem),
 
-                                  // 关闭加载提示（如果还在显示）
-                                  if (Get.isDialogOpen == true) {
-                                    Get.back();
-                                  }
-
-                                  // 显示错误提示
-                                  Get.snackbar(
-                                    '错误',
-                                    '获取视频源失败: $e',
-                                    duration: Duration(seconds: 3),
-                                    backgroundColor: Colors.red.shade100,
-                                  );
-                                }
-                              },
-                              child: Padding(
-                                padding: EdgeInsets.all(12),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    // 剧集标题
-                                    Row(
-                                      children: [
-                                        Text(
-                                          widget.episodesList[index]
-                                              .subjectsTitle,
-                                          style: TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                        SizedBox(width: 8),
-                                        Text(
-                                          episode.episodeSort.padLeft(2, '0'),
-                                          style: TextStyle(
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-
-                                    SizedBox(height: 12),
-                                    // 线路信息
-                                    Row(
-                                      children: [
-                                        Icon(Icons.settings,
-                                            size: 16, color: Colors.grey),
-                                        SizedBox(width: 8),
-                                        Spacer(),
-                                        Text(
-                                          widget.episodesList[index].lineNames,
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
+                          // 在最后一项后显示开关按钮
+                          if (isLastItem) ...[
+                            Padding(
+                              padding: EdgeInsets.symmetric(vertical: 8),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  Text(
+                                    '显示已被排除的资源',
+                                    style: TextStyle(fontSize: 14),
+                                  ),
+                                  SizedBox(width: 8),
+                                  Switch(
+                                    value: isShowEpisodes,
+                                    onChanged: (value) {
+                                      setShowEpisodes();
+                                    },
+                                  ),
+                                ],
                               ),
-                            ));
-                      }).toList(),
-                    );
+                            ),
+
+                            // 当开关打开时，显示所有资源的所有其他剧集
+                            if (isShowEpisodes)
+                              ...widget.episodesList.expand((item) {
+                                // 获取该资源的所有非当前集数的剧集
+                                final otherEpisodes = item.episodes
+                                    .where(
+                                      (ep) =>
+                                          ep.episodeSort !=
+                                          episodesController.episodeIndex.value,
+                                    )
+                                    .toList();
+
+                                // 遍历所有其他剧集
+                                return otherEpisodes.map((otherEpisode) =>
+                                    _buildVideoSource(otherEpisode, item));
+                              }),
+                          ],
+                        ],
+                      );
+                    });
                   },
                 ),
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildVideoSource(Episode episode, EpisodeResourcesItem item) {
+    return Card.filled(
+      margin: EdgeInsets.only(bottom: 8),
+      child: InkWell(
+        onTap: () async {
+          try {
+            Get.back();
+            videoStateController.disposeVideo();
+            final videoUrl =
+                await WebRequest.getVideoSourceService(episode.like);
+            videoSourceController.setVideoUrl(videoUrl);
+            Get.snackbar(
+              '视频资源解析成功',
+              '',
+              duration: Duration(seconds: 2),
+              maxWidth: 300,
+            );
+          } catch (e) {
+            logger.e('获取视频源失败: $e');
+            if (Get.isDialogOpen == true) {
+              Get.back();
+            }
+            Get.snackbar(
+              '错误',
+              '获取视频源失败: $e',
+              duration: Duration(seconds: 3),
+              backgroundColor: Colors.red.shade100,
+            );
+          }
+        },
+        child: Padding(
+          padding: EdgeInsets.all(12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Text(
+                    item.subjectsTitle,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(width: 8),
+                  Text(
+                    '第${episode.episodeSort}集',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Spacer(),
+                ],
+              ),
+              SizedBox(height: 12),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '线路:',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey,
+                    ),
+                  ),
+                  SizedBox(width: 8),
+                  Text(
+                    item.lineNames,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey,
+                    ),
+                  ),
+                  Icon(Icons.link, size: 20, color: Colors.grey),
+                  Spacer(),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

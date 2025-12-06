@@ -15,17 +15,17 @@ import 'package:anime_flow/utils/platform_util.dart';
 import 'mobile_gesture_detector.dart';
 
 ///播放器控件
-class VideoControlsUi extends StatefulWidget {
+class VideoControlsUiView extends StatefulWidget {
   final Subject subject;
   final Player player;
 
-  const VideoControlsUi(this.player, {super.key, required this.subject});
+  const VideoControlsUiView(this.player, {super.key, required this.subject});
 
   @override
-  State<VideoControlsUi> createState() => _VideoControlsUiState();
+  State<VideoControlsUiView> createState() => _VideoControlsUiViewState();
 }
 
-class _VideoControlsUiState extends State<VideoControlsUi> {
+class _VideoControlsUiViewState extends State<VideoControlsUiView> {
   late VideoUiStateController videoUiStateController;
   late PlayPageController playPageController;
   late VideoStateController videoStateController;

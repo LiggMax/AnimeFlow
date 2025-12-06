@@ -4,6 +4,7 @@ import 'package:anime_flow/models/enums/video_controls_icon_type.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:media_kit_video/media_kit_video.dart';
 
 /// 视频控制手势检测器
 class DesktopGestureDetector extends StatelessWidget {
@@ -45,7 +46,7 @@ class DesktopGestureDetector extends StatelessWidget {
           child: GestureDetector(
             // 双击事件
             onDoubleTap: () {
-              //TODO 播放器全屏
+              toggleFullscreen(context);
             },
 
             // 单击事件

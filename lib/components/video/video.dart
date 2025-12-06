@@ -1,4 +1,4 @@
-import 'package:anime_flow/components/video/controls/video_controls.dart';
+import 'package:anime_flow/components/video/controls/index_controls.dart';
 import 'package:anime_flow/controllers/video/video_source_controller.dart';
 import 'package:anime_flow/controllers/video/video_state_controller.dart';
 import 'package:anime_flow/controllers/video/video_ui_state_controller.dart';
@@ -49,7 +49,7 @@ class _VideoViewState extends State<VideoView> {
       children: [
         Video(
           controller: controller,
-          controls: (state) => VideoControlsUi(
+          controls: (state) => VideoControlsUiView(
             player,
             subject: widget.subject,
           ),

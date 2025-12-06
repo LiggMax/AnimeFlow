@@ -96,7 +96,7 @@ class _IntroduceViewState extends State<IntroduceView>
   Widget build(BuildContext context) {
     // 必须调用 super.build 来启用 AutomaticKeepAliveClientMixin
     super.build(context);
-
+    const String sourceTitle = "数据源";
     return Padding(
         padding: EdgeInsets.all(10),
         child: SingleChildScrollView(
@@ -144,52 +144,68 @@ class _IntroduceViewState extends State<IntroduceView>
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        "数据源",
-                        style: TextStyle(
-                            fontSize: 20, fontWeight: FontWeight.bold),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              sourceTitle,
+                              style: TextStyle(
+                                  fontSize: 20, fontWeight: FontWeight.bold),
+                            ),
+                            Obx(() => episodesController.episodeTitle.value != ''
+                                ? Text(episodesController.episodeTitle.value,
+                                    maxLines: 3, overflow: TextOverflow.ellipsis)
+                                : SizedBox.shrink()),
+                          ],
+                        ),
                       ),
+                      SizedBox(width: 8),
                       isVideoSource
                           ? SizedBox(
                               width: 20,
                               height: 20,
                               child: CircularProgressIndicator(),
                             )
-                          : OutlinedButton.icon(
-                              onPressed: () {
-                                Get.generalDialog(
-                                    barrierDismissible: true,
-                                    barrierLabel: "SourceDrawer",
-                                    barrierColor: Colors.black54,
-                                    transitionDuration:
-                                        const Duration(milliseconds: 300),
-                                    // 动画
-                                    transitionBuilder: (context, animation,
-                                        secondaryAnimation, child) {
-                                      return SlideTransition(
-                                        position: Tween<Offset>(
-                                          begin: const Offset(1, 0),
-                                          end: Offset.zero,
-                                        ).animate(CurvedAnimation(
-                                          parent: animation,
-                                          curve: Curves.easeOut,
-                                        )),
-                                        child: child,
-                                      );
-                                    },
-                                    pageBuilder: (context, animation,
-                                        secondaryAnimation) {
-                                      return VideoSourceDrawers(
-                                          "数据源", episodeResources);
-                                    });
-                              },
-                              style: OutlinedButton.styleFrom(
-                                side: BorderSide(
-                                  color: Theme.of(context).colorScheme.primary,
+                          : SizedBox(
+                              width: 110,
+                              child: OutlinedButton.icon(
+                                onPressed: () {
+                                  Get.generalDialog(
+                                      barrierDismissible: true,
+                                      barrierLabel: "SourceDrawer",
+                                      barrierColor: Colors.black54,
+                                      transitionDuration:
+                                          const Duration(milliseconds: 300),
+                                      // 动画
+                                      transitionBuilder: (context, animation,
+                                          secondaryAnimation, child) {
+                                        return SlideTransition(
+                                          position: Tween<Offset>(
+                                            begin: const Offset(1, 0),
+                                            end: Offset.zero,
+                                          ).animate(CurvedAnimation(
+                                            parent: animation,
+                                            curve: Curves.easeOut,
+                                          )),
+                                          child: child,
+                                        );
+                                      },
+                                      pageBuilder: (context, animation,
+                                          secondaryAnimation) {
+                                        return VideoSourceDrawers(
+                                            sourceTitle, episodeResources);
+                                      });
+                                },
+                                style: OutlinedButton.styleFrom(
+                                  side: BorderSide(
+                                    color:
+                                        Theme.of(context).colorScheme.primary,
+                                  ),
                                 ),
+                                icon: Icon(Icons.sync_alt_rounded),
+                                label: const Text("切换源"),
                               ),
-                              icon: Icon(Icons.sync_alt_rounded),
-                              label: const Text("切换源"),
                             )
                     ],
                   ),
@@ -399,14 +415,14 @@ class _IntroduceViewState extends State<IntroduceView>
                 (index) {
                   final episode = episodeList[index];
                   return Obx(() => Card(
-                      color: videoSourceController.episodeSort.value ==
-                              episode.sort
-                          ? Theme.of(context).colorScheme.primaryContainer
-                          : null,
+                      color:
+                          episodesController.episodeSort.value == episode.sort
+                              ? Theme.of(context).colorScheme.primaryContainer
+                              : null,
                       child: InkWell(
                         onTap: () {
                           final episodeIndex = index + 1;
-                          videoSourceController.setEpisodeSort(
+                          episodesController.setEpisodeSort(
                               episode.sort, episodeIndex);
                           episodesController.setEpisodeTitle(episode.nameCN);
                           logger.i('选中剧集索引:$episodeIndex');

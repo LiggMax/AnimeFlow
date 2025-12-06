@@ -68,7 +68,7 @@ class HtmlCrawler {
       List<Episode> episodes = [];
       for (int j = 0; j < currentEpisodesElement.nodes.length; j++) {
         var episodeNode = currentEpisodesElement.nodes[j];
-        String episodeStr = (j + 1).toString();
+        int episodeStr = (j + 1);
         String episodeLike = episodeNode.attributes['href'] ?? '';
 
         Episode episodeObj = Episode(

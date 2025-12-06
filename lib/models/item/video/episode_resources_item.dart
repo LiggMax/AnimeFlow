@@ -45,7 +45,7 @@ class EpisodeResourcesItem {
 }
 
 class Episode {
-  final String episodeSort;
+  final int episodeSort;
   final String like;
 
   Episode({required this.episodeSort, required this.like});
