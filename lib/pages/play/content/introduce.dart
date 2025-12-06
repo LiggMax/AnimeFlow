@@ -22,13 +22,18 @@ class IntroduceView extends StatefulWidget {
   State<IntroduceView> createState() => _IntroduceViewState();
 }
 
-class _IntroduceViewState extends State<IntroduceView> {
+class _IntroduceViewState extends State<IntroduceView>
+    with AutomaticKeepAliveClientMixin {
   late PlayPageController playPageController;
   late VideoSourceController videoResourcesController;
   Worker? _screenWorker; // 屏幕宽高监听器
   bool isVideoSource = true;
   late List<SearchResourcesItem> _searchList;
   late List<EpisodeResourcesItem> _episodesList;
+
+  // 保持页面状态，防止切换Tab时重新加载
+  @override
+  bool get wantKeepAlive => true;
 
   @override
   void initState() {
@@ -86,6 +91,9 @@ class _IntroduceViewState extends State<IntroduceView> {
 
   @override
   Widget build(BuildContext context) {
+    // 必须调用 super.build 来启用 AutomaticKeepAliveClientMixin
+    super.build(context);
+    
     return Padding(
         padding: EdgeInsets.all(10),
         child: SingleChildScrollView(

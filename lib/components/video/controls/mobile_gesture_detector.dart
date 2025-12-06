@@ -26,6 +26,8 @@ class MobileGestureDetector extends StatelessWidget {
       //单击事件
       onTap: () {
         videoUiStateController.showOrHideControlsUi();
+        videoUiStateController.hideControlsUi(
+            duration: const Duration(seconds: 3));
       },
 
       //双击事件

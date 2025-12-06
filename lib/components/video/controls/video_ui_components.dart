@@ -120,35 +120,3 @@ class VideoTimeDisplay extends StatelessWidget {
     });
   }
 }
-
-/// 播放状态图标组件
-class PlayStatusIcon extends StatelessWidget {
-  final VideoUiStateController videoController;
-
-  const PlayStatusIcon(this.videoController, {super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Obx(() {
-      if (videoController.showPlayStatusIcon.value) {
-        return Container(
-          height: 50,
-          width: 60,
-          decoration: BoxDecoration(
-            color: Colors.black.withValues(alpha: 0.5),
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Icon(
-            videoController.isPlaying
-                ? Icons.pause_rounded
-                : Icons.play_arrow_rounded,
-            size: 33,
-            color: Colors.white54,
-          ),
-        );
-      } else {
-        return SizedBox.shrink();
-      }
-    });
-  }
-}

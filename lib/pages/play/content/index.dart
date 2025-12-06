@@ -1,5 +1,6 @@
 import 'package:anime_flow/models/episodes_item.dart';
 import 'package:anime_flow/models/hot_item.dart';
+import 'package:anime_flow/pages/play/content/comments.dart';
 import 'package:flutter/material.dart';
 
 import 'introduce.dart';
@@ -18,6 +19,8 @@ class _ContentViewState extends State<ContentView>
     with SingleTickerProviderStateMixin {
   final List<String> _tabs = ['简介', '评论'];
   late TabController _tabController;
+  final GlobalKey _introduceKey = GlobalKey();
+  final GlobalKey _commentKey = GlobalKey();
 
   @override
   void initState() {
@@ -42,8 +45,8 @@ class _ContentViewState extends State<ContentView>
               controller: _tabController,
               children: [
                 //简介view
-                IntroduceView(widget.subject, widget.episodes),
-                Text('评论'),
+                IntroduceView(widget.subject, widget.episodes,key: _introduceKey,),
+                CommentsView(key: _commentKey,)
               ],
             ),
           ),
