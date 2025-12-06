@@ -1,5 +1,6 @@
 import 'package:anime_flow/components/play_content/video_source_drawers.dart';
 import 'package:anime_flow/constants/play_layout_constant.dart';
+import 'package:anime_flow/controllers/episodes/episodes_controller.dart';
 import 'package:anime_flow/controllers/play/PlayPageController.dart';
 import 'package:anime_flow/controllers/video/video_source_controller.dart';
 import 'package:anime_flow/models/item/episodes_item.dart';
@@ -24,9 +25,12 @@ class _IntroduceViewState extends State<IntroduceView>
     with AutomaticKeepAliveClientMixin {
   late PlayPageController playPageController;
   late VideoSourceController videoResourcesController;
+  late EpisodesController episodesController;
+  late VideoSourceController videoSourceController;
+
+  late List<EpisodeResourcesItem> episodeResources;
   Worker? _screenWorker; // 屏幕宽高监听器
   bool isVideoSource = true;
-  late List<EpisodeResourcesItem> episodeResources;
 
   // 保持页面状态，防止切换Tab时重新加载
   @override
@@ -37,6 +41,8 @@ class _IntroduceViewState extends State<IntroduceView>
     super.initState();
     playPageController = Get.find<PlayPageController>();
     videoResourcesController = Get.find<VideoSourceController>();
+    episodesController = Get.find<EpisodesController>();
+    videoSourceController = Get.find<VideoSourceController>();
 
     getVideoResources();
     // 初始化监听器
@@ -149,7 +155,7 @@ class _IntroduceViewState extends State<IntroduceView>
                               height: 20,
                               child: CircularProgressIndicator(),
                             )
-                          : OutlinedButton(
+                          : OutlinedButton.icon(
                               onPressed: () {
                                 Get.generalDialog(
                                     barrierDismissible: true,
@@ -177,15 +183,14 @@ class _IntroduceViewState extends State<IntroduceView>
                                           "数据源", episodeResources);
                                     });
                               },
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Icon(Icons.sync_alt_rounded),
-                                  SizedBox(width: 10),
-                                  Text("切换源")
-                                ],
-                              ))
+                              style: OutlinedButton.styleFrom(
+                                side: BorderSide(
+                                  color: Theme.of(context).colorScheme.primary,
+                                ),
+                              ),
+                              icon: Icon(Icons.sync_alt_rounded),
+                              label: const Text("切换源"),
+                            )
                     ],
                   ),
                 ),
@@ -338,7 +343,6 @@ class _IntroduceViewState extends State<IntroduceView>
                           logger.i('第${episode.sort}话');
                           //TODO 实现播放
                         },
-                        borderRadius: BorderRadius.circular(12), // 匹配Card圆角
                         child: Padding(
                           padding: EdgeInsets.all(12),
                           child: Column(
@@ -376,6 +380,7 @@ class _IntroduceViewState extends State<IntroduceView>
   //横向滚动卡片
   FutureBuilder<EpisodesItem> _scrollTheCardHorizontally() {
     final Logger logger = Logger();
+
     return FutureBuilder<EpisodesItem>(
       future: widget.episodes,
       builder: (context, snapshot) {
@@ -393,32 +398,39 @@ class _IntroduceViewState extends State<IntroduceView>
                 episodeList.length,
                 (index) {
                   final episode = episodeList[index];
-                  return Card(
-                    child: InkWell(
-                      onTap: () {
-                        logger.i('第${episode.sort}话');
-                      },
-                      child: Container(
-                        width: 150,
-                        padding: EdgeInsets.all(8),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text('第${episode.sort}话'),
-                            SizedBox(height: 5),
-                            Text(
-                              episode.nameCN.isNotEmpty
-                                  ? episode.nameCN
-                                  : episode.name,
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 1,
-                            ),
-                          ],
+                  return Obx(() => Card(
+                      color: videoSourceController.episodeSort.value ==
+                              episode.sort
+                          ? Theme.of(context).colorScheme.primaryContainer
+                          : null,
+                      child: InkWell(
+                        onTap: () {
+                          final episodeIndex = index + 1;
+                          videoSourceController.setEpisodeSort(
+                              episode.sort, episodeIndex);
+                          episodesController.setEpisodeTitle(episode.nameCN);
+                          logger.i('选中剧集索引:$episodeIndex');
+                        },
+                        child: Container(
+                          width: 150,
+                          padding: EdgeInsets.all(8),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text('第${episode.sort}话'),
+                              SizedBox(height: 5),
+                              Text(
+                                episode.nameCN.isNotEmpty
+                                    ? episode.nameCN
+                                    : episode.name,
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                    ),
-                  );
+                      )));
                 },
               ),
             ),

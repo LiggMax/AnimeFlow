@@ -1,5 +1,6 @@
 import 'package:anime_flow/components/video/video.dart';
 import 'package:anime_flow/constants/play_layout_constant.dart';
+import 'package:anime_flow/controllers/episodes/episodes_controller.dart';
 import 'package:anime_flow/controllers/play/PlayPageController.dart';
 import 'package:anime_flow/controllers/video/video_source_controller.dart';
 import 'package:anime_flow/models/item/episodes_item.dart';
@@ -29,6 +30,7 @@ class _PlayPageState extends State<PlayPage> {
     super.initState();
     playController = Get.put(PlayPageController());
     Get.put(VideoSourceController());
+    Get.put(EpisodesController());
 
     var args = Get.arguments;
     subject = args['subject'] as Subject;
@@ -39,6 +41,7 @@ class _PlayPageState extends State<PlayPage> {
   void dispose() {
     Get.delete<PlayPageController>();
     Get.delete<VideoSourceController>();
+    Get.delete<EpisodesController>();
     super.dispose();
   }
 

@@ -1,4 +1,5 @@
 import 'package:anime_flow/components/anime_head_detail/head_detail.dart';
+import 'package:anime_flow/controllers/anime/anime_state_controller.dart';
 import 'package:anime_flow/http/requests/bgm_request.dart';
 import 'package:anime_flow/models/item/episodes_item.dart';
 import 'package:anime_flow/models/item/hot_item.dart';
@@ -15,8 +16,9 @@ class AnimeDetailPage extends StatefulWidget {
 
 class _AnimeDetailPageState extends State<AnimeDetailPage>
     with SingleTickerProviderStateMixin {
-  late Subject animeDetail;
-  late TabController _tabController;
+  late Subject subject;
+  late TabController tabController;
+  late AnimeStateController animeStateController;
   late Future<SubjectsItem?> _subjectsItem;
   late Future<EpisodesItem> episodesFuture;
 
@@ -27,16 +29,24 @@ class _AnimeDetailPageState extends State<AnimeDetailPage>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: _tabs.length, vsync: this);
-    animeDetail = Get.arguments;
-    _subjectsItem = BgmRequest.getSubjectByIdService(animeDetail.id);
+    tabController = TabController(length: _tabs.length, vsync: this);
+    subject = Get.arguments;
+    animeStateController = Get.put(AnimeStateController());
+    _subjectsItem = BgmRequest.getSubjectByIdService(subject.id);
     episodesFuture =
-        BgmRequest.getSubjectEpisodesByIdService(animeDetail.id, 100, 0);
+        BgmRequest.getSubjectEpisodesByIdService(subject.id, 100, 0);
+
+    setSubjectName();
+  }
+
+  void setSubjectName() {
+    animeStateController.setAnimeName(subject.nameCN ?? subject.name);
   }
 
   @override
   void dispose() {
-    _tabController.dispose();
+    tabController.dispose();
+    Get.delete<AnimeStateController>();
     super.dispose();
   }
 
@@ -75,7 +85,7 @@ class _AnimeDetailPageState extends State<AnimeDetailPage>
                     opacity: _isPinned ? 1.0 : 0.0,
                     duration: const Duration(milliseconds: 300),
                     child: Text(
-                      animeDetail.nameCN ?? animeDetail.name,
+                      subject.nameCN ?? subject.name,
                     ),
                   ),
                   leading: IconButton(
@@ -110,7 +120,7 @@ class _AnimeDetailPageState extends State<AnimeDetailPage>
                         future: _subjectsItem,
                         builder: (context, snapshot) {
                           return HeadDetail(
-                            animeDetail,
+                            subject,
                             snapshot.data,
                             episodesFuture,
                             statusBarHeight: statusBarHeight,
@@ -125,7 +135,7 @@ class _AnimeDetailPageState extends State<AnimeDetailPage>
                   bottom: PreferredSize(
                     preferredSize: const Size.fromHeight(tabBarHeight),
                     child: TabBar(
-                      controller: _tabController,
+                      controller: tabController,
                       tabs: _tabs.map((name) => Tab(text: name)).toList(),
                     ),
                   ),
@@ -135,7 +145,7 @@ class _AnimeDetailPageState extends State<AnimeDetailPage>
           },
           // Body 使用 TabBarView
           body: TabBarView(
-            controller: _tabController,
+            controller: tabController,
             children: _tabs.map((name) {
               return Builder(
                 builder: (BuildContext context) {

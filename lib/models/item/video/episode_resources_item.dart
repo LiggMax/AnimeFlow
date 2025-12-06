@@ -20,18 +20,6 @@ class CrawlerEpisodeResourcesItem {
   }
 }
 
-class Episode {
-  final String episodeSort;
-  final String like;
-
-  Episode({required this.episodeSort, required this.like});
-
-  @override
-  String toString() {
-    return 'Episode{episodeSort: $episodeSort, like: $like}';
-  }
-}
-
 class EpisodeResourcesItem {
   final String subjectsTitle;
   final String lineNames;
@@ -53,5 +41,17 @@ class EpisodeResourcesItem {
   @override
   String toString() {
     return 'EpisodeResourcesItem{subjectsTitle: $subjectsTitle, lineNames: $lineNames, episodes: $episodes}';
+  }
+}
+
+class Episode {
+  final String episodeSort;
+  final String like;
+
+  Episode({required this.episodeSort, required this.like});
+
+  @override
+  String toString() {
+    return 'Episode{episodeSort: $episodeSort, like: $like}';
   }
 }

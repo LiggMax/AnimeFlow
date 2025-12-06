@@ -41,28 +41,32 @@ class _VideoSourceDrawersState extends State<VideoSourceDrawers> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  widget.title,
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Theme.of(context).textTheme.titleLarge?.color,
-                    decoration: TextDecoration.none,
+            Padding(
+              padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    widget.title,
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).textTheme.titleLarge?.color,
+                      decoration: TextDecoration.none,
+                    ),
                   ),
-                ),
-                IconButton(
-                  onPressed: () => Get.back(),
-                  icon: const Icon(Icons.close_rounded),
-                ),
-              ],
+                  IconButton(
+                    onPressed: () => Get.back(),
+                    icon: const Icon(Icons.close_rounded),
+                  ),
+                ],
+              ),
             ),
             const SizedBox(height: 10),
             Expanded(
               child: Material(
                 child: ListView.builder(
+                  padding: EdgeInsets.symmetric(vertical: 0),
                   itemCount: widget.episodesList.length,
                   itemBuilder: (context, index) {
                     final resourceItem = widget.episodesList[index];
@@ -100,28 +104,42 @@ class _VideoSourceDrawersState extends State<VideoSourceDrawers> {
                                     Get.back();
                                   }
 
-                                   // 显示错误提示
-                                   Get.snackbar(
-                                     '错误',
-                                     '获取视频源失败: $e',
-                                     duration: Duration(seconds: 3),
-                                     backgroundColor: Colors.red.shade100,
-                                   );
-                                 }
-                               },
+                                  // 显示错误提示
+                                  Get.snackbar(
+                                    '错误',
+                                    '获取视频源失败: $e',
+                                    duration: Duration(seconds: 3),
+                                    backgroundColor: Colors.red.shade100,
+                                  );
+                                }
+                              },
                               child: Padding(
                                 padding: EdgeInsets.all(12),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     // 剧集标题
-                                    Text(
-                                      '第${episode.episodeSort}集',
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.bold,
-                                      ),
+                                    Row(
+                                      children: [
+                                        Text(
+                                          widget.episodesList[index]
+                                              .subjectsTitle,
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        SizedBox(width: 8),
+                                        Text(
+                                          episode.episodeSort.padLeft(2, '0'),
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ],
                                     ),
+
                                     SizedBox(height: 12),
                                     // 线路信息
                                     Row(

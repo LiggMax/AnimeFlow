@@ -1,8 +1,8 @@
 import 'package:anime_flow/models/item/episodes_item.dart';
 import 'package:anime_flow/models/item/hot_item.dart';
-import 'package:anime_flow/pages/play/content/comments.dart';
 import 'package:flutter/material.dart';
 
+import 'comments.dart';
 import 'introduce.dart';
 
 class ContentView extends StatefulWidget {

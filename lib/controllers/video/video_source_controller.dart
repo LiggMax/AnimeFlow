@@ -5,10 +5,17 @@ import 'package:get/get.dart';
 
 /// 视频源控制器
 class VideoSourceController extends GetxController {
-  RxString videoRul = ''.obs;
+  final RxString videoRul = ''.obs;
+  final RxInt episodeSort = 0.obs;
+  final RxInt episodeIndex = 0.obs;
 
   void setVideoUrl(String url) {
     videoRul.value = url;
+  }
+
+  void setEpisodeSort(int sort, int episodeIndex) {
+    episodeSort.value = sort;
+    this.episodeIndex.value = episodeIndex;
   }
 
   Future<List<EpisodeResourcesItem>> getVideoResources(String keyword) async {
